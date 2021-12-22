@@ -29,8 +29,6 @@ async function createUser(name, email, password) {
     }
 }
 
-//createUser("Test", "malte@malteteichert.de", "test");
-
 //get all user documents
 async function getAllUsers() {
     return await client.postAllDocs({
@@ -42,7 +40,7 @@ async function getAllUsers() {
 //find user by id
 async function findUserById(id) {
     let data = await getAllUsers();
-    return data.result.rows.filter(user => user.doc._id === id); 
+    return data.result.rows.filter(user => user.doc._id === id);
 }
 
 //find user by email
@@ -52,18 +50,33 @@ async function findUserByEmail(email) {
 }
 
 //create a new season in data
-function createSeason(creatorId, year, seasonNr, teams, drivers, events) {
-    return client.db(datadb).insert({
-        _id: Uuid.v4(),
-        creatorId: creatorId,
-        year: year,
-        seasonNr: seasonNr,
-        teams: teams,
-        drivers: drivers,
-        events: events,
-        results: [],
-        createdAt: new Date()
+function createSeason(year, seasonNr, driverTeams, tracks) {
+    let currentDate = new Date();
+    let results = {};
+    tracks.forEach(track => {
+        results[track] = {
+            "event": track,
+            "raceResult": [],
+            "qualiResult": [],
+            "penalties": [],
+            "fastestLap": "",
+            "dnf": [],
+            "heldAt": ""
+        }
     })
+    return client.postDocument({
+        db: datadb,
+        document: JSON.stringify({
+            _id: Uuid.v4(),
+            year: year,
+            seasonNr: seasonNr,
+            driverTeams: driverTeams,
+            tracks: tracks,
+            results: results,
+            createdAt: currentDate,
+            updatedAt: currentDate
+        })
+    });
 }
 
 //get all seasons
@@ -80,10 +93,16 @@ function findSeasonByYear(year) {
     return data.result.rows.filter(season => season.doc.year === year);
 }
 
+function findSeasonByYearAndSeasonNr(year, seasonNr) {
+    let data = findSeasonByYear(year);
+    return data.result.rows.filter(season => season.doc.seasonNr === seasonNr);
+}
+
 module.exports = {
     createUser,
     findUserById,
     findUserByEmail,
     createSeason,
-    findSeasonByYear
+    findSeasonByYear,
+    findSeasonByYearAndSeasonNr
 }

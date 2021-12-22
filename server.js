@@ -19,12 +19,9 @@ initializePassport(
   async id => await db.findUserById(id)
 )
 
-
-//REPLACE WITH DB FOR PRODUCTION
-// const users = []
-
 app.set('view-engine', 'ejs')
 app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
 app.use(flash())
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -71,6 +68,41 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
 app.delete('/logout', (req, res) => {
   req.logOut()
   res.redirect('/login')
+})
+
+app.get('/season/:season-:nr', (req, res) => {
+  //get season from db
+  let season;
+
+  res.render('season.ejs', season)
+})
+
+app.get('/create', checkAuthenticated, (req, res)=>{
+  //render season creation page
+  res.render('create.ejs');
+})
+
+app.post('/create', (req, res) => {
+  //create new season
+  try {
+    db.createSeason(req.body.year, req.body.season, req.body.driverTeams, req.body.tracks);
+    console.log('received new season');
+    // console.log(req.body);  
+    res.status(200).redirect('/');
+  }catch(err){
+    res.status(400).send();
+  }
+})
+
+app.get('/result/:season-:nr', checkAuthenticated, (req, res) => {
+  //get season from db
+  let season = {
+    season: req.params.season,
+    nr: req.params.nr
+  }
+  console.log(season);
+  //render result entry page
+  //res.render('result.ejs', season)
 })
 
 function checkAuthenticated(req, res, next) {
