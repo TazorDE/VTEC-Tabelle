@@ -82,7 +82,7 @@ app.get('/create', checkAuthenticated, (req, res)=>{
   res.render('create.ejs');
 })
 
-app.post('/create', (req, res) => {
+app.post('/create', checkAuthenticated, (req, res) => {
   //create new season
   try {
     db.createSeason(req.body.year, req.body.season, req.body.driverTeams, req.body.tracks);
