@@ -32,7 +32,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
 
-app.get('/', checkAuthenticated, async(req, res) => {
+app.get('/', checkAuthenticated, async (req, res) => {
   let user = await req.user;
   res.render('index.ejs', { name: user[0].doc.name })
 })
@@ -77,19 +77,27 @@ app.get('/season/:season-:nr', (req, res) => {
   res.render('season.ejs', season)
 })
 
-app.get('/create', checkAuthenticated, (req, res)=>{
+app.get('/create', checkAuthenticated, (req, res) => {
   //render season creation page
   res.render('create.ejs');
 })
 
-app.post('/create', checkAuthenticated, (req, res) => {
-  //create new season
-  try {
-    db.createSeason(req.body.year, req.body.season, req.body.driverTeams, req.body.tracks);
-    console.log('received new season');
-    // console.log(req.body);  
-    res.status(200).redirect('/');
-  }catch(err){
+app.post('/create', async (req, res) => {
+  //check if season exists
+  let exists = await db.findSeasonByYearAndSeasonNr(req.body.year, req.body.season);
+  exists = exists.length > 0;
+  if (!exists) {
+    //create new season
+    try {
+      db.createSeason(req.body.year, req.body.season, req.body.driverTeams, req.body.tracks);
+      console.log('received new season');
+      // console.log(req.body);  
+      res.status(200).redirect('/');
+    } catch (err) {
+      res.status(400).send();
+    }
+  } else {
+    //season does not exist
     res.status(400).send();
   }
 })

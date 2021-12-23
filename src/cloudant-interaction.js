@@ -88,14 +88,16 @@ function getAllSeasons() {
 }
 
 //find season by year
-function findSeasonByYear(year) {
+async function findSeasonByYear(year) {
     let data = getAllSeasons();
+    data = await data;
     return data.result.rows.filter(season => season.doc.year === year);
 }
 
-function findSeasonByYearAndSeasonNr(year, seasonNr) {
+async function findSeasonByYearAndSeasonNr(year, seasonNr) {
     let data = findSeasonByYear(year);
-    return data.result.rows.filter(season => season.doc.seasonNr === seasonNr);
+    data = await data;
+    return data.filter(season => season.doc.seasonNr === seasonNr);
 }
 
 module.exports = {

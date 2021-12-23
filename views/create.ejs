@@ -17,6 +17,7 @@
     let teamNr;
     let driverNr;
     let result;
+    let teams = [];
 
     function initialInfo() {
       year = document.getElementById("year");
@@ -43,6 +44,7 @@
           //add team input field
           teamlist.innerHTML += `<label for="team${i}">Team ${i+1}: </label>`;
           teamlist.innerHTML += `<input type="text" name="team${i}" id="team${i}" required>`;
+          teamlist.innerHTML += `<input type="color" name="color${i}" id="color${i}" required>`;
           teamlist.innerHTML += `<br><br>`;
         }
         driverNr = parseInt(driverCount.value);
@@ -132,12 +134,23 @@
           let track = document.getElementById(`track${i}`);
           result.tracks.push(track.value);
         }
+        for (let i = 0; i < teamNr; i++) {
+          let team = document.getElementById(`team${i}`);
+          let color = document.getElementById(`color${i}`);
+          teams.push({
+            "team": team.value,
+            "color": color.value
+          });
+        }
         for (let i = 0; i < driverNr; i++) {
           let driver = document.getElementById(`driver${i}`);
           let team = driver.nextSibling;
+          //find team index
+          let teamIndex = teams.findIndex(x => x.team === team.value);
           result.driverTeams.push({
             "driver": driver.value,
-            "team": team.value
+            "team": team.value,
+            "color": teams[teamIndex].color
           });
         }
         //hide drivers and show submit button
@@ -146,7 +159,6 @@
       } else {
         document.getElementById('drivers-error').innerText = "Please fill in all the fields";
       }
-
     }
 
     function generateFinalOverview() {
@@ -182,7 +194,7 @@
         if (res.status === 200) {
           console.log("success");
         } else {
-          document.getElementById("submit-error").innerText = "Something went wrong, please try again. Status: " + res.status;
+          document.getElementById("submit-error").innerText = "Something went wrong, please try again. Maybe it already exists? Status: " + res.status;
         }
       });
     }
