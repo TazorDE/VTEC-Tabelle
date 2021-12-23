@@ -105,6 +105,7 @@ module.exports = {
     findUserById,
     findUserByEmail,
     createSeason,
+    getAllSeasons,
     findSeasonByYear,
     findSeasonByYearAndSeasonNr
 }

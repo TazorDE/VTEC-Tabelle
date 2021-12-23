@@ -113,6 +113,17 @@ app.get('/result/:season-:nr', checkAuthenticated, (req, res) => {
   //res.render('result.ejs', season)
 })
 
+app.get('/edit', checkAuthenticated, async(req, res) => {
+  let list = await db.getAllSeasons();
+  //get list of all seasons
+  res.render('list.ejs', { list: list.result });
+})
+
+app.get('/edit/:year-:season', checkAuthenticated, async (req, res) => {
+  let season = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
+  res.render('edit.ejs', {season: season[0].doc});
+})
+
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next()
