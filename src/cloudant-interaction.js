@@ -100,6 +100,19 @@ async function findSeasonByYearAndSeasonNr(year, seasonNr) {
     return data.filter(season => season.doc.seasonNr === seasonNr);
 }
 
+async function updateSeason(year, seasonNr, doc) {
+    let data = await findSeasonByYearAndSeasonNr(year, seasonNr);
+    data = data[0];
+
+    doc._id = data.doc._id;
+    doc._rev = data.doc._rev;
+    return client.postDocument({
+        db: datadb,
+        document: JSON.stringify(doc)
+    })
+
+}
+
 module.exports = {
     createUser,
     findUserById,
@@ -107,5 +120,6 @@ module.exports = {
     createSeason,
     getAllSeasons,
     findSeasonByYear,
-    findSeasonByYearAndSeasonNr
+    findSeasonByYearAndSeasonNr,
+    updateSeason
 }

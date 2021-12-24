@@ -102,18 +102,7 @@ app.post('/create', async (req, res) => {
   }
 })
 
-app.get('/result/:season-:nr', checkAuthenticated, (req, res) => {
-  //get season from db
-  let season = {
-    season: req.params.season,
-    nr: req.params.nr
-  }
-  console.log(season);
-  //render result entry page
-  //res.render('result.ejs', season)
-})
-
-app.get('/edit', checkAuthenticated, async(req, res) => {
+app.get('/edit', checkAuthenticated, async (req, res) => {
   let list = await db.getAllSeasons();
   //get list of all seasons
   res.render('list.ejs', { list: list.result });
@@ -121,7 +110,61 @@ app.get('/edit', checkAuthenticated, async(req, res) => {
 
 app.get('/edit/:year-:season', checkAuthenticated, async (req, res) => {
   let season = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
-  res.render('edit.ejs', {season: season[0].doc});
+  res.render('edit.ejs', { season: season[0].doc });
+})
+
+app.put('/edit/:year-:season', checkAuthenticated, async (req, res) => {
+  //check if season exists
+  let exists = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
+  exists = exists.length > 0;
+  if (!exists) {
+    //season does not exist
+    res.status(400).send();
+  } else {
+    //update season in db
+    db.updateSeason(req.params.year, req.params.season, req.body);
+    res.status(200).send();
+  }
+})
+
+app.get('/newResult', checkAuthenticated, async (req, res) => {
+  let list = await db.getAllSeasons();
+  //get list of all seasons
+  res.render('resultSeasonList.ejs', { list: list.result });
+})
+
+app.get('/newResult/:year-:season', checkAuthenticated, async (req, res) => {
+  //check if season exists
+  let exists = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
+  existsbool = exists.length > 0;
+  if (!existsbool) {
+    //season does not exist
+    res.status(400).redirect('/newResult');
+  } else {
+    res.status(200).render('resultRaceList.ejs', { season: exists[0].doc });
+  }
+})
+
+app.get('/newResult/:year-:season/:race', checkAuthenticated, async (req, res) => {
+  //check if season exists
+  let exists = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
+  existsbool = exists.length > 0;
+  console.log(exists)
+  console.log(req.params.race)
+  if (!existsbool) {
+    //season does not exist
+    res.status(400).redirect('/newResult');
+  } else {
+    if (exists[0].doc.tracks.includes(req.params.race)) {
+      let season = {
+        doc: exists[0].doc,
+        track: req.params.race
+      };
+      res.status(200).render('newResult.ejs', { season: season});
+    } else {
+      res.status(400).redirect('/newResult');
+    }
+  }
 })
 
 function checkAuthenticated(req, res, next) {

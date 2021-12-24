@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Result - <%= season.track %> (<%= season.doc.year %>S<%= season.doc.seasonNr %>)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/slate/bootstrap.min.css" integrity="sha384-8iuq0iaMHpnH2vSyvZMSIqQuUnQA7QM+f6srIdlgBrTSEyd//AWNMyEaSF2yPzNQ" crossorigin="anonymous">
+</head>
+
+<body class="text-center">
+  <h1>New Result - <%= season.track %> (<%= season.doc.year %>S<%= season.doc.seasonNr %>)</h1>
+  <br>
+  <div id="initForm">
+    <input type="number" id="raceDrivers" placeholder="Race participants" />
+    <br>
+    <br>
+    <input type="number" id="qualiDrivers" placeholder="Quali participants" />
+    <br>
+    <br>
+    <button type="button" class="btn btn-primary" onclick="init()">New Result</button>
+  </div>
+
+  <div id="raceResult">
+
+  </div>
+
+  <div id="qualiResult">
+
+  </div>
+
+  <script>
+    function init() {
+      let raceDriverCount = document.getElementById("raceDrivers").value;
+      let qualiDriverCount = document.getElementById("qualiDrivers").value;
+      let raceResult = document.getElementById("raceResult");
+      let qualiResult = document.getElementById("qualiResult");
+
+      if(!raceDriverCount || !qualiDriverCount) {
+        alert("Please enter a number of participants for both");
+        return;
+      }else{
+        //generate race result input
+        let raceResultContent;
+        //add fastest Lap input
+        //add date input
+        //add inputs for final race classification
+
+        //add inputs for penalties
+        
+        //generate quali result input
+
+      }
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+</body>
+
+</html>
