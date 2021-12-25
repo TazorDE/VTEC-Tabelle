@@ -70,13 +70,6 @@ app.delete('/logout', (req, res) => {
   res.redirect('/login')
 })
 
-app.get('/season/:season-:nr', (req, res) => {
-  //get season from db
-  let season;
-
-  res.render('season.ejs', season)
-})
-
 app.get('/create', checkAuthenticated, (req, res) => {
   //render season creation page
   res.render('create.ejs');
@@ -168,14 +161,14 @@ app.get('/newResult/:year-:season/:race', checkAuthenticated, async (req, res) =
 app.post('/newResult/:year-:season/:race', checkAuthenticated, async (req, res) => {
   let exists = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
   existsbool = exists.length > 0;
-  if(!existsbool){
+  if (!existsbool) {
     res.status(400).send();
   } else {
     //check if race exists in season
-    if(exists[0].doc.tracks.includes(req.params.race)){
-      if(db.addRaceResultToSeason(req.params.year, req.params.season, req.params.race, req.body)==null){
+    if (exists[0].doc.tracks.includes(req.params.race)) {
+      if (db.addRaceResultToSeason(req.params.year, req.params.season, req.params.race, req.body) == null) {
         res.status(400).send();
-      }else{
+      } else {
         res.status(200).send();
       }
     } else {
@@ -211,15 +204,43 @@ app.get('/editResult/:year-:season/:race', checkAuthenticated, async (req, res) 
     res.status(400).redirect('/editResult');
   } else {
     //check if race exists in season and race is not empty
-    if(exists[0].doc.tracks.includes(req.params.race) && exists[0].doc.results[req.params.race].fastestLap != ""){
-      res.status(200).render('editResult.ejs', {season: exists[0].doc, race: req.params.race})
-    }else{
+    if (exists[0].doc.tracks.includes(req.params.race) && exists[0].doc.results[req.params.race].fastestLap != "") {
+      res.status(200).render('editResult.ejs', { season: exists[0].doc, race: req.params.race })
+    } else {
       res.status(400).redirect(`/editResult/${req.params.year}-${req.params.season}`);
     }
-    
-    //res.status(200).render('editResult.ejs', { season: exists[0].doc, race: req.params.race });
   }
 })
+
+app.post('/editResult/:year-:season/:race', checkAuthenticated, async (req, res) => {
+  let exists = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
+  existsbool = exists.length > 0;
+  if (!existsbool) {
+    res.status(400).send();
+  } else {
+    //check if race exists in season
+    if (exists[0].doc.tracks.includes(req.params.race)) {
+      //update race in season
+      if (db.updateRaceResultInSeason(req.params.year, req.params.season, req.params.race, req.body) == null) {
+        res.status(400).send();
+      } else {
+        res.status(200).send();
+      }
+    }
+  }
+})
+
+app.get('/result/:year-:season', async (req, res) => {
+  //check if season exists
+  let exists = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
+  existsbool = exists.length > 0;
+  if (!existsbool) {
+    //season does not exist
+    res.status(400).redirect('/');
+  } else {
+    res.status(200).render('result.ejs', { season: exists[0].doc });
+  }
+});
 
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
