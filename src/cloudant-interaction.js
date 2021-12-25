@@ -113,6 +113,21 @@ async function updateSeason(year, seasonNr, doc) {
 
 }
 
+async function addRaceResultToSeason(year, seasonNr, track, raceResult) {
+    let data = await findSeasonByYearAndSeasonNr(year, seasonNr);
+    data = data[0];
+
+    //check if result already exists
+    let raceResultExists = false;
+    if(data.doc.results[track].fastestLap == "") {
+        data.doc.results[track] = raceResult;
+        data.doc.updatedAt = new Date();
+        return updateSeason(year, seasonNr, data.doc);    
+    }else{
+        return null;
+    }
+}
+
 module.exports = {
     createUser,
     findUserById,
@@ -121,5 +136,6 @@ module.exports = {
     getAllSeasons,
     findSeasonByYear,
     findSeasonByYearAndSeasonNr,
+    addRaceResultToSeason,
     updateSeason
 }
