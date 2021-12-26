@@ -32,9 +32,16 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
 
-app.get('/', checkAuthenticated, async (req, res) => {
+app.get('/admin', checkAuthenticated, async (req, res) => {
   let user = await req.user;
-  res.render('index.ejs', { name: user[0].doc.name })
+  res.render('admin.ejs', { name: user[0].doc.name })
+})
+
+app.get('/', async (req, res) => {
+  let list = await db.getAllSeasons();
+  //get list of all seasons
+  res.render('index.ejs', { list: list.result });
+
 })
 
 app.get('/login', checkNotAuthenticated, (req, res) => {
@@ -42,7 +49,7 @@ app.get('/login', checkNotAuthenticated, (req, res) => {
 })
 
 app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
-  successRedirect: '/',
+  successRedirect: '/admin',
   failureRedirect: '/login',
   failureFlash: true
 }))
@@ -67,7 +74,7 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
 
 app.delete('/logout', (req, res) => {
   req.logOut()
-  res.redirect('/login')
+  res.redirect('/')
 })
 
 app.get('/create', checkAuthenticated, (req, res) => {
@@ -242,6 +249,10 @@ app.get('/result/:year-:season', async (req, res) => {
   }
 });
 
+app.get('/result/', (req, res) => {
+  res.redirect('/');
+})
+
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next()
@@ -252,7 +263,7 @@ function checkAuthenticated(req, res, next) {
 
 function checkNotAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
-    return res.redirect('/')
+    return res.redirect('/admin')
   }
   next()
 }
