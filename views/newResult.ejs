@@ -38,7 +38,21 @@
     <br>
     <br>
 
-    <div id="results" style="display: flex; flex-direction: row; justify-content: center;">
+    <style>
+      .wrapper {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+      }
+
+      @media screen and (max-width: 660px) {
+        .wrapper {
+          flex-direction: column;
+        }
+      }
+    </style>
+
+    <div id="results" class="wrapper">
       <div id="raceResult" style="display: block; margin-right: 5%;">
         <h3>Race Result</h3>
         <br>
@@ -126,7 +140,7 @@
       let raceDNF = [];
 
       for (let i = 0; i < parseInt(document.getElementById("raceDrivers").value); i++) {
-        if(!document.getElementById(`raceResult${i}`).value) {
+        if (!document.getElementById(`raceResult${i}`).value) {
           alert("Please select a driver for all input fields");
           return;
         }
@@ -137,18 +151,18 @@
           driver: document.getElementById(`penalty${i}`).value,
           penalty: document.getElementById(`pen${i}`).value
         }
-        if(penalty.driver != '' && penalty.penalty != '') {
+        if (penalty.driver != '' && penalty.penalty != '') {
           penalties.push(penalty);
         }
       }
       for (let i = 0; i < parseInt(document.getElementById("qualiDrivers").value); i++) {
-        if(!document.getElementById(`qualiResult${i}`).value) {
+        if (!document.getElementById(`qualiResult${i}`).value) {
           alert("Please select a driver for all quali input fields");
           return;
         }
         qualiResult.push(document.getElementById(`qualiResult${i}`).value);
       }
-      if(document.getElementById("racedate").value == '') {
+      if (document.getElementById("racedate").value == '') {
         alert("Please enter a date");
         return;
       }
@@ -172,7 +186,7 @@
         if (response.status == 200) {
           window.location.href = "/";
         } else {
-          alert("Error saving result: "+response.status);
+          alert("Error saving result: " + response.status);
         }
       });
     }

@@ -13,6 +13,18 @@
       max-width: 30%;
       margin: auto;
     }
+
+    .wrapper {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+    }
+
+    @media screen and (max-width: 650px) {
+      .wrapper {
+        flex-direction: column;
+      }
+    }
   </style>
 </head>
 
@@ -27,7 +39,7 @@
   <input type="number" id="season" name="season" value="<%= parseInt(season.seasonNr) %>">
   <br><br>
 
-  <div style="display: flex; flex-direction: row; justify-content: center;">
+  <div class="wrapper">
     <div style="display: flex; justify-content: center; margin-right: 5%;">
       <div>
         <h3>Driver / Team / Color:</h3>
@@ -51,7 +63,7 @@
       <div>
         <h3>Events:</h3>
         <br>
-  
+
         <div style="text-align: center; display: flex; justify-content: center;">
           <ol id="tracksList" style="margin: auto;">
             <button type="button" class="btn btn-secondary btn-sm" onclick="addfirst(event)">+</button>
@@ -63,7 +75,7 @@
             </li>
             <% } %>
           </ol>
-        </div>  
+        </div>
       </div>
     </div>
   </div>
@@ -74,7 +86,6 @@
 
 
   <script>
-
     let prevResults = JSON.parse('<%- JSON.stringify(season.results) %>');
 
     function addnext(e) {
@@ -141,7 +152,7 @@
       //build new results
       let newResults = {};
       trackNames.forEach(track => {
-        if(!prevResults[track]) {
+        if (!prevResults[track]) {
           newResults[track] = {
             event: track,
             raceResult: [],
@@ -166,7 +177,7 @@
         updatedAt: new Date()
       };
 
-      if(confirm("Are you sure you want to save these changes?")){
+      if (confirm("Are you sure you want to save these changes?")) {
         let path = window.location.pathname;
         fetch(path, {
           method: 'PUT',
@@ -176,14 +187,14 @@
           body: JSON.stringify(newSeasonDoc)
         }).then(res => {
           console.log(res);
-          if(res.status == 200) {
+          if (res.status == 200) {
             window.location.href = '/';
-          }else {
+          } else {
             alert("Something went wrong. The Season probably doesn't exist.");
           }
         })
-        
-      }else{
+
+      } else {
         console.log("Not saving...");
       }
     }

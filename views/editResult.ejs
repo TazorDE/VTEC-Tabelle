@@ -11,9 +11,23 @@
 
 <body class="text-center" style="text-align: center;">
 
+  <style>
+    .outerbox {
+      display: flex;
+      justify-content: center;
+      flex-direction: row;
+    }
+
+    @media screen and (max-width: 770px) {
+      .outerbox {
+        flex-direction: column;
+      }
+    }
+  </style>
+
   <h1>Edit Result - <%= season.year %> Season: <%= season.seasonNr %> - <%= race %></h1>
   <br>
-  <div style="display: flex; justify-content: center; flex-direction: row;">
+  <div class="outerbox">
 
     <div style="margin-right: 2rem;">
       Date of the race:
