@@ -29,6 +29,9 @@
     @media only screen and (max-width: 1550px) {
       .tablebox {
         display: block;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: fit-content;
       }
     }
 
@@ -37,6 +40,12 @@
         display: block;
         overflow-x: auto;
         white-space: nowrap;
+      }
+      .tablebox {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: max-content;
       }
     }
   </style>
@@ -164,25 +173,13 @@
     <table class="sortable">
       <thead>
         <thead>
-          <!--
-            <th style="min-width: 10em;"></th>
-            <th style="min-width: 2em;"></th>
-          -->
           <% season.tracks.forEach(element => { %>
           <th scope="col"><%= element %></th>
           <% }); %>
-          <!--
-            <th style="min-width: 2em;"></th>
-            <th style="min-width: 6em;"></th>
-          -->
         </thead>
       </thead>
       <tbody>
         <tr>
-          <!--
-            <td style="border: none;"></td>
-            <td style="border: none;"></td>
-          -->
           <% for(let i=0; i<season.tracks.length; i++){ %>
           <% 
             let currDriver = season.results[season.tracks[i]].fastestLap;
@@ -271,7 +268,7 @@
           <td style="min-width: 4em; border: 1px solid #dddddd; background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;"> <% if(currPenalty != undefined ){%> <%= currPenalty.penalty %>s <%} %> </td>
           <% } %>
           <td></td>
-          <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;"><b><%= penalties %>s</b></td>
+          <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;"><b><%= penalties %> s</b></td>
         </tr>
         <% });%>
       </tbody>
@@ -344,7 +341,7 @@
           <td style="min-width: 4em; background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>"> <%= element.points[i] %> </td>
           <% } %>
           <td></td>
-          <td style="min-width: 4em; background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>"> <%= element.totalpoints %> </td>
+          <td style="min-width: 4em; background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>"> <b><%= element.totalpoints %></b> </td>
         </tr>
         <% }); %>
       </tbody>

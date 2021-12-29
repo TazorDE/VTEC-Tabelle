@@ -184,7 +184,7 @@
         body: JSON.stringify(result)
       }).then(function(response) {
         if (response.status == 200) {
-          window.location.href = "/";
+          window.location.href = "/newResult";
         } else {
           alert("Error saving result: " + response.status);
         }
