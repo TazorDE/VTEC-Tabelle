@@ -118,16 +118,16 @@
         <% res.forEach((element) => { %>
         <tr>
           <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;"> <b><%= element.driver %></b> </td>
-          <td style="background-color: <%= element.color %>;"></td>
+	  <td></td>
           <% for(let i=0; i < season.tracks.length; i++) { %>
-          <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;">
+          <td style="min-width:4em; background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;">
             <% let currPosIndex = season.results[season.tracks[i]].raceResult.indexOf(element.driver);
             if(currPosIndex != -1){%>
             <% if(element.driver == season.results[season.tracks[i]].fastestLap) { %>
             <b>
               <% } %>
 
-              <%= season.results[season.tracks[i]].raceResult.indexOf(element.driver) +1 %>
+             <%= season.results[season.tracks[i]].raceResult.indexOf(element.driver) +1 %>
 
               <% if( season.results[season.tracks[i]].dnf[currPosIndex] ){%>
                 (DNF)
@@ -179,7 +179,7 @@
               }
             });
             %>
-          <td style="border: 1px solid #dddddd; background-color: <%= currColor %>; color: <%= getContrastYIQ(currColor) %>;"><%= season.results[season.tracks[i]].fastestLap %></td>
+          <td style="min-width: 4em; border: 1px solid #dddddd; background-color: <%= currColor %>; color: <%= getContrastYIQ(currColor) %>;"><%= season.results[season.tracks[i]].fastestLap %></td>
           <% } %>
         </tr>
       </tbody>
@@ -212,7 +212,7 @@
               qualiRes = 'DNS';
             }
           %>
-          <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;"> <%= qualiRes %> </td>
+          <td style="min-width: 4em; background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;"> <%= qualiRes %> </td>
           <% } %>
         </tr>
         <% });%>
@@ -254,7 +254,7 @@
               penalties += parseInt(currPenalty.penalty);
             }
             %>
-          <td style="border: 1px solid #dddddd; background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;"> <% if(currPenalty != undefined ){%> <%= currPenalty.penalty %>s <%} %> </td>
+          <td style="min-width: 4em; border: 1px solid #dddddd; background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;"> <% if(currPenalty != undefined ){%> <%= currPenalty.penalty %>s <%} %> </td>
           <% } %>
           <td></td>
           <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;"><b><%= penalties %>s</b></td>
@@ -327,10 +327,10 @@
           <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>"> <%= element.team %> </td>
           <td></td>
           <% for(let i=0;i<season.tracks.length;i++) {%>
-          <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>"> <%= element.points[i] %> </td>
+          <td style="min-width: 4em; background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>"> <%= element.points[i] %> </td>
           <% } %>
           <td></td>
-          <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>"> <%= element.totalpoints %> </td>
+          <td style="min-width: 4em; background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>"> <%= element.totalpoints %> </td>
         </tr>
         <% }); %>
       </tbody>
