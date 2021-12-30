@@ -44,7 +44,8 @@ app.use((req, res) => {
 const credentials = {
   key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem', 'utf8'),
   cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem', 'utf8'),
-  dhparam: fs.readFileSync('/var/www/example/sslcert/dh-strong.pem', 'utf8')
+  dhparam: fs.readFileSync('/var/www/example/sslcert/dh-strong.pem', 'utf8'),
+  ca: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/chain.pem', 'utf8')
 };
 
 console.log(credentials);
