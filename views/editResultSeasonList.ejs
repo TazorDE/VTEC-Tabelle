@@ -13,7 +13,26 @@
 
   <h1>Edit Result</h1>
   <br>
-  <% list.rows.forEach(element => { %>
+  <% let sortedArray;
+  // sort list.rows by doc.year and doc.seasonNr
+  sortedArray = list.rows.sort(function(a, b) {
+    if (a.doc.year < b.doc.year) {
+      return 1;
+    }
+    if (a.doc.year > b.doc.year) {
+      return -1;
+    }
+    if (a.doc.seasonNr < b.doc.seasonNr) {
+      return 1;
+    }
+    if (a.doc.seasonNr > b.doc.seasonNr) {
+      return -1;
+    }
+    return 0;
+  });
+%> 
+
+  <% sortedArray.forEach(element => { %>
   <button type="button" class="btn btn-info"><a href="/editResult/<%= element.doc.year %>-<%= element.doc.seasonNr %>"><%= element.doc.year %>
     Season: <%= element.doc.seasonNr %></a> </button>
   <br>
