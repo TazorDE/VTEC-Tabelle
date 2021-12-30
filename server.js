@@ -277,6 +277,8 @@ const credentials = {
   cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem')
 };
 
+console.log(credentials);
+
 const server = https.createServer(credentials, app).listen(80, () => {
   console.log('Server running on port 80');
 });
