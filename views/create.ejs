@@ -193,6 +193,7 @@
       }).then(res => {
         if (res.status === 200) {
           console.log("success");
+          window.location.href = "/admin";
         } else {
           document.getElementById("submit-error").innerText = "Something went wrong, please try again. Maybe it already exists? Status: " + res.status;
         }
