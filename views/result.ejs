@@ -327,7 +327,7 @@
         <th>Team</th>
         <th style="min-width: 2em;"></th>
         <% season.tracks.forEach(element => { %>
-        <th scope="col"><b><%= element %></b></th>
+        <th scope="col"><%= element %></th>
         <% }); %>
         <th style="min-width: 2em;"></th>
         <th>Points</th>
@@ -335,7 +335,7 @@
       <tbody>
         <% teams.forEach(element => { %>
         <tr>
-          <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>"> <%= element.team %> </td>
+          <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>"> <b><%= element.team %></b> </td>
           <td></td>
           <% for(let i=0;i<season.tracks.length;i++) {%>
           <td style="min-width: 4em; background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>"> <%= element.points[i] %> </td>
