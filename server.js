@@ -283,4 +283,4 @@ const server = https.createServer(credentials, app).listen(80, () => {
 
 const httpServer = http.createServer(app).listen(8080, () => {
   console.log('Server running on port 8080');
-}
+});
