@@ -268,4 +268,11 @@ function checkNotAuthenticated(req, res, next) {
   next()
 }
 
-app.listen(80);
+const credentials = {
+  key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem')
+};
+
+const server = https.createServer(credentials, app).listen(80, () => {
+  console.log('Server running on port 80');
+});
