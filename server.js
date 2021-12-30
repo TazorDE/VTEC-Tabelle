@@ -281,6 +281,6 @@ const server = https.createServer(credentials, app).listen(80, () => {
   console.log('Server running on port 80');
 });
 
-const httpServer = http.createServer(app).listen(8080, () => {
-  console.log('Server running on port 8080');
+const httpServer = http.createServer(app).listen(5060, () => {
+  console.log('Server running on port 5060');
 });
