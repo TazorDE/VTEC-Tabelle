@@ -13,6 +13,7 @@ const passport = require('passport')
 const flash = require('express-flash')
 const session = require('express-session')
 const methodOverride = require('method-override')
+const helmet = require('helmet')
 
 const db = require('./src/cloudant-interaction')
 
@@ -35,10 +36,12 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
+app.use(helmet())
 
 const credentials = {
   key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem').toString(),
-  cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem').toString()
+  cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem').toString(),
+  dhparam: fs.readFileSync('/var/www/example/sslcert/dh-strong.pem').toString()
 };
 
 console.log(credentials);
