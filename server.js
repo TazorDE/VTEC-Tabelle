@@ -36,6 +36,19 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
 
+const credentials = {
+  key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem').toString(),
+  cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem').toString()
+};
+
+const server = https.createServer(credentials, app).listen(80, () => {
+  console.log('Server running on port 80');
+});
+
+const httpServer = http.createServer(app).listen(5060, () => {
+  console.log('Server running on port 5060');
+});
+
 app.get('/admin', checkAuthenticated, async (req, res) => {
   let user = await req.user;
   res.render('admin.ejs', { name: user[0].doc.name })
@@ -272,15 +285,3 @@ function checkNotAuthenticated(req, res, next) {
   next()
 }
 
-const credentials = {
-  key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem').toString(),
-  cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem').toString()
-};
-
-const server = https.createServer(credentials, app).listen(80, () => {
-  console.log('Server running on port 80');
-});
-
-const httpServer = http.createServer(app).listen(5060, () => {
-  console.log('Server running on port 5060');
-});
