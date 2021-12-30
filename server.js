@@ -46,14 +46,6 @@ const credentials = {
 
 console.log(credentials);
 
-const server = https.createServer(credentials, app).listen(80, () => {
-  console.log('Server running on port 80');
-});
-
-const httpServer = http.createServer(app).listen(5060, () => {
-  console.log('Server running on port 5060');
-});
-
 app.get('/admin', checkAuthenticated, async (req, res) => {
   let user = await req.user;
   res.render('admin.ejs', { name: user[0].doc.name })
@@ -290,3 +282,5 @@ function checkNotAuthenticated(req, res, next) {
   next()
 }
 
+http.createServer(app).listen(80);
+https.createServer(credentials, app).listen(443);
