@@ -42,9 +42,9 @@ app.use((req, res) => {
 })
 
 const credentials = {
-  key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem'),
-  dhparam: fs.readFileSync('/var/www/example/sslcert/dh-strong.pem')
+  key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem', 'utf8'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem', 'utf8'),
+  dhparam: fs.readFileSync('/var/www/example/sslcert/dh-strong.pem', 'utf8')
 };
 
 console.log(credentials);
@@ -286,4 +286,4 @@ function checkNotAuthenticated(req, res, next) {
 }
 
 http.createServer(app).listen(80);
-https.createServer(credentials, app).listen(443, 'vtec.malteteichert.de');
+https.createServer(credentials, app).listen(443);
