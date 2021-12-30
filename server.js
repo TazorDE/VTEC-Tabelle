@@ -37,9 +37,6 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
 app.use(helmet())
-app.use((req, res) => {
-  res.writeHead(200);
-})
 
 const credentials = {
   key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem', 'utf8'),
@@ -47,8 +44,6 @@ const credentials = {
   dhparam: fs.readFileSync('/var/www/example/sslcert/dh-strong.pem', 'utf8'),
   ca: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/chain.pem', 'utf8')
 };
-
-console.log(credentials);
 
 app.get('/admin', checkAuthenticated, async (req, res) => {
   let user = await req.user;
