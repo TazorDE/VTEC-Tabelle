@@ -273,11 +273,9 @@ function checkNotAuthenticated(req, res, next) {
 }
 
 const credentials = {
-  key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem')
+  key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem').toString(),
+  cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem').toString()
 };
-
-console.log(credentials);
 
 const server = https.createServer(credentials, app).listen(80, () => {
   console.log('Server running on port 80');
