@@ -39,9 +39,9 @@ app.use(methodOverride('_method'))
 app.use(helmet())
 
 const credentials = {
-  key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem').toString(),
-  cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem').toString(),
-  dhparam: fs.readFileSync('/var/www/example/sslcert/dh-strong.pem').toString()
+  key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem'),
+  dhparam: fs.readFileSync('/var/www/example/sslcert/dh-strong.pem')
 };
 
 console.log(credentials);
