@@ -4,6 +4,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const fs = require('fs');
 const https = require('https');
+const http = require('http');
 
 const express = require('express')
 const app = express()
@@ -279,3 +280,7 @@ const credentials = {
 const server = https.createServer(credentials, app).listen(80, () => {
   console.log('Server running on port 80');
 });
+
+const httpServer = http.createServer(app).listen(8080, () => {
+  console.log('Server running on port 8080');
+}
