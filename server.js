@@ -37,6 +37,9 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
 app.use(helmet())
+app.use((req, res) => {
+  res.writeHead(200);
+})
 
 const credentials = {
   key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem'),
