@@ -258,11 +258,14 @@ app.get('/result/:year-:season', async (req, res) => {
     //season does not exist
     res.status(400).redirect('/');
   } else {
-    res.set('Content-Type', 'text/html');
-    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.set('Access-Control-Allow-Origin', '*');
-    res.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    res.set('Content-Security-Policy', 'default-src *')
+    res.set({
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
+      "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+      "Content-Security-Policy": "default-src *",
+      "X-Content-Security-Policy": "default-src *",
+      "X-WebKit-CSP": "default-src *"
+    });
     res.status(200).render('result.ejs', { season: exists[0].doc });
   }
 });
