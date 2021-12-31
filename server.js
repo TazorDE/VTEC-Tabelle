@@ -262,9 +262,9 @@ app.get('/result/:year-:season', async (req, res) => {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
       "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
-      "Content-Security-Policy": "default-src *",
-      "X-Content-Security-Policy": "default-src *",
-      "X-WebKit-CSP": "default-src *"
+      "Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
+      "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
+      "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"
     });
     res.status(200).render('result.ejs', { season: exists[0].doc });
   }
