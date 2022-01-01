@@ -10,23 +10,47 @@
 </head>
 
 <body class="text-center">
-  <h1>Login</h1>
-  <% if (messages.error) { %>
-  <%= messages.error %>
-  <% } %>
-  <form action="/login" method="POST">
-    <div>
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" required>
-    </div>
-    <div>
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" required>
-    </div>
-    <button type="submit">Login</button>
-  </form>
 
-  <%- include('footer')%>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    #container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    #footer {
+      margin-top: auto;
+    }
+  </style>
+  <div id="container">
+    <div id="body">
+      <h1>Login</h1>
+      <% if (messages.error) { %>
+      <%= messages.error %>
+      <% } %>
+      <form action="/login" method="POST">
+        <div>
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div>
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">Login</button>
+      </form>
+    </div>
+    <div id="footer">
+      <%- include('footer')%>
+    </div>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>
 
