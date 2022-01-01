@@ -201,42 +201,66 @@
     }
   </script>
 
-  <div id="initial-info">
-    <h1>VTEC season creation form</h1>
-    <label for="year">Year:</label>
-    <input type="number" name="year" id="year" required>
-    <br><br>
-    <label for="season">SeasonNr.:</label>
-    <input type="number" min="1" max="4" name="season" id="season" required>
-    <br><br>
-    <label for="track-count">Track count:</label>
-    <input type="number" name="track-count" id="track-count" required>
-    <br><br>
-    <label for="team-count">Team count:</label>
-    <input type="number" name="team-count" id="team-count" required>
-    <br><br>
-    <label for="driver-count">Driver count:</label>
-    <input type="number" name="driver-count" id="driver-count" required>
-    <p id="initial-error"></p>
-    <button type="button" onclick="initialInfo()">Next step</button>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    #container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    #footer {
+      margin-top: auto;
+    }
+  </style>
+  <div id="container">
+    <div id="body">
+      <div id="initial-info">
+        <h1>VTEC season creation form</h1>
+        <label for="year">Year:</label>
+        <input type="number" name="year" id="year" required>
+        <br><br>
+        <label for="season">SeasonNr.:</label>
+        <input type="number" min="1" max="4" name="season" id="season" required>
+        <br><br>
+        <label for="track-count">Track count:</label>
+        <input type="number" name="track-count" id="track-count" required>
+        <br><br>
+        <label for="team-count">Team count:</label>
+        <input type="number" name="team-count" id="team-count" required>
+        <br><br>
+        <label for="driver-count">Driver count:</label>
+        <input type="number" name="driver-count" id="driver-count" required>
+        <p id="initial-error"></p>
+        <button type="button" onclick="initialInfo()">Next step</button>
+      </div>
+      <div id="tracks" style="display: none;">
+        <h1>Please enter the Tracks that are driven:</h1>
+        <div id="tracklist"></div>
+        <p id="tracks-error"></p>
+        <button type="button" onclick="setTracks()">Next step</button>
+      </div>
+      <div id="teams" style="display: none;">
+        <h1>Please enter the Teams that will compete:</h1>
+        <div id="teamlist"></div>
+        <p id="teams-error"></p>
+        <button type="button" onclick="setTeams()">Next step</button>
+      </div>
+      <div id="drivers" style="display: none;">
+        <h1>Please enter the Drivers for the current season:</h1>
+        <div id="driverlist"></div>
+        <button type="button" onclick="setDriver()">finish</button>
+      </div>
+    </div>
+    <div id="footer">
+      <%- include('footer')%>
+    </div>
   </div>
-  <div id="tracks" style="display: none;">
-    <h1>Please enter the Tracks that are driven:</h1>
-    <div id="tracklist"></div>
-    <p id="tracks-error"></p>
-    <button type="button" onclick="setTracks()">Next step</button>
-  </div>
-  <div id="teams" style="display: none;">
-    <h1>Please enter the Teams that will compete:</h1>
-    <div id="teamlist"></div>
-    <p id="teams-error"></p>
-    <button type="button" onclick="setTeams()">Next step</button>
-  </div>
-  <div id="drivers" style="display: none;">
-    <h1>Please enter the Drivers for the current season:</h1>
-    <div id="driverlist"></div>
-    <button type="button" onclick="setDriver()">finish</button>
-  </div>
-  <%- include('footer')%>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>

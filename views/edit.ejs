@@ -30,176 +30,200 @@
 
 <body class="text-center">
 
-  <h1>Edit the chosen Seson:</h1>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
 
-  <label for="year">Year:</label>
-  <input type="number" id="year" name="year" value="<%= parseInt(season.year) %>">
-  <br><br>
-  <label for="season">Season Nr.:</label>
-  <input type="number" id="season" name="season" value="<%= parseInt(season.seasonNr) %>">
-  <br><br>
+    #container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-  <div class="wrapper">
-    <div style="display: flex; justify-content: center; margin-right: 5%;">
-      <div>
-        <h3>Driver / Team / Color:</h3>
-        <div id=drivers>
-          <% for (let i=0; i < season.driverTeams.length; i++) { %>
-          <div id="driverdiv<%= i %> ">
-            <label for="driver">Driver <%= i+1 %>:</label>
-            <input type="text" id="driver<%= i %>" name="driver<%= i %>" value="<%= season.driverTeams[i].driver %>">
-            <input type="text" id="teamDriver<%= i %>" name="teamDriver<%= i %>" value="<%= season.driverTeams[i].team %>">
-            <input type="color" id="colorTeamDriver<%= i %>" name="colorTeamDriver<%= i %>" value="<%= season.driverTeams[i].color %>">
-            <br><br>
-          </div>
-          <% } %>
-        </div>
-        <button type="button" class="btn btn-secondary btn-sm" onclick="addNewDriver()" id="newDriver">+ Driver</button>
-      </div>
+    #footer {
+      margin-top: auto;
+    }
+  </style>
+  <div id="container">
+    <div id="body">
+      <h1>Edit the chosen Seson:</h1>
+
+      <label for="year">Year:</label>
+      <input type="number" id="year" name="year" value="<%= parseInt(season.year) %>">
       <br><br>
-    </div>
+      <label for="season">Season Nr.:</label>
+      <input type="number" id="season" name="season" value="<%= parseInt(season.seasonNr) %>">
+      <br><br>
 
-    <div style="display: flex; justify-content: center;">
-      <div>
-        <h3>Events:</h3>
-        <br>
+      <div class="wrapper">
+        <div style="display: flex; justify-content: center; margin-right: 5%;">
+          <div>
+            <h3>Driver / Team / Color:</h3>
+            <div id=drivers>
+              <% for (let i=0; i < season.driverTeams.length; i++) { %>
+              <div id="driverdiv<%= i %> ">
+                <label for="driver">Driver <%= i+1 %>:</label>
+                <input type="text" id="driver<%= i %>" name="driver<%= i %>" value="<%= season.driverTeams[i].driver %>">
+                <input type="text" id="teamDriver<%= i %>" name="teamDriver<%= i %>" value="<%= season.driverTeams[i].team %>">
+                <input type="color" id="colorTeamDriver<%= i %>" name="colorTeamDriver<%= i %>" value="<%= season.driverTeams[i].color %>">
+                <br><br>
+              </div>
+              <% } %>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="addNewDriver()" id="newDriver">+ Driver</button>
+          </div>
+          <br><br>
+        </div>
 
-        <div style="text-align: center; display: flex; justify-content: center;">
-          <ol id="tracksList" style="margin: auto;">
-            <button type="button" class="btn btn-secondary btn-sm" onclick="addfirst(event)">+</button>
-            <% for (let i=0; i<season.tracks.length; i++){ %>
-            <li style="margin: auto;">
-              <p style="text-align: left; margin: auto;"><%= season.tracks[i] %></p>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="addnext(event)">+</button>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="removecurrent(event)">-</button>
-            </li>
-            <% } %>
-          </ol>
+        <div style="display: flex; justify-content: center;">
+          <div>
+            <h3>Events:</h3>
+            <br>
+
+            <div style="text-align: center; display: flex; justify-content: center;">
+              <ol id="tracksList" style="margin: auto;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="addfirst(event)">+</button>
+                <% for (let i=0; i<season.tracks.length; i++){ %>
+                <li style="margin: auto;">
+                  <p style="text-align: left; margin: auto;"><%= season.tracks[i] %></p>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="addnext(event)">+</button>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="removecurrent(event)">-</button>
+                </li>
+                <% } %>
+              </ol>
+            </div>
+          </div>
         </div>
       </div>
+
+      <br>
+      <button type="button" class="btn btn-primary" onclick="finish()">Save</button>
+      <br><br><br><br><br><br><br>
+
+
+      <script>
+        let prevResults = JSON.parse('<%- JSON.stringify(season.results) %>');
+
+        function addnext(e) {
+          let input = prompt("Enter the name of the next track");
+          if (input != null) {
+            let li = document.createElement("li");
+            li.innerHTML = `<p style="text-align: left; margin: auto;">${input}</p>` + " <button type='button' class='btn btn-secondary btn-sm' onclick='addnext(event)'>+</button> <button type='button' class='btn btn-secondary btn-sm' onclick='removecurrent(event)'>-</button>";
+            insertAfter(li, e.srcElement.parentElement);
+          }
+        }
+
+        function addfirst(e) {
+          let input = prompt("Enter the name of the next track");
+          if (input != null) {
+            let li = document.createElement("li");
+            li.innerHTML = `<p style="text-align: left; margin: auto;">${input}</p>` + " <button type='button' class='btn btn-secondary btn-sm' onclick='addnext(event)'>+</button> <button type='button' class='btn btn-secondary btn-sm' onclick='removecurrent(event)'>-</button>";
+            insertAfter(li, e.srcElement);
+          }
+        }
+
+        function removecurrent(e) {
+          console.log(e.srcElement.parentElement);
+          e.srcElement.parentElement.remove();
+        }
+
+        function addNewDriver() {
+          let driverCount = parseInt('<%= season.driverTeams.length %>');
+          console.log(driverCount);
+          let newDriver = document.createElement("div");
+          newDriver.id = "driverdiv" + driverCount;
+          newDriver.innerHTML = "<label for='driver" + driverCount + "'>Driver " + (driverCount + 1) + ":</label> <input type='text' id='driver" + driverCount + "' name='driver" + driverCount + "'> <input type='text' id='teamDriver" + driverCount + "' name='teamDriver" + driverCount + "'> <input type='color' id='colorTeamDriver" + driverCount + "' name='colorTeamDriver" + driverCount + "'> <br><br>";
+          document.getElementById("drivers").appendChild(newDriver);
+        }
+
+        function insertAfter(newNode, referenceNode) {
+          referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+        }
+
+        function finish() {
+          //get all drivers
+          let driverTeams = [];
+          let drivers = document.getElementById('drivers');
+          let driverDivs = drivers.getElementsByTagName('div');
+
+          for (let i = 0; i < driverDivs.length; i++) {
+            let driver = document.getElementById('driver' + i).value;
+            let team = document.getElementById('teamDriver' + i).value;
+            let color = document.getElementById('colorTeamDriver' + i).value;
+            let driverTeam = {
+              driver: driver,
+              team: team,
+              color: color
+            };
+            driverTeams.push(driverTeam);
+          }
+          let trackNames = [];
+          let tracks = document.getElementById('tracksList');
+          tracks = tracks.getElementsByTagName('li');
+          for (let i = 0; i < tracks.length; i++) {
+            let track = tracks[i].getElementsByTagName('p')[0].innerHTML;
+            trackNames.push(track);
+          }
+
+          //build new results
+          let newResults = {};
+          trackNames.forEach(track => {
+            if (!prevResults[track]) {
+              newResults[track] = {
+                event: track,
+                raceResult: [],
+                qualiResult: [],
+                penalties: [],
+                fastestLap: "",
+                dnf: [],
+                heldAt: ""
+              };
+            } else {
+              newResults[track] = prevResults[track];
+            }
+          })
+
+          let newSeasonDoc = {
+            seasonNr: '<%= season.seasonNr %>',
+            year: '<%= season.year %>',
+            driverTeams: driverTeams,
+            tracks: trackNames,
+            results: newResults,
+            createdAt: '<%= season.createdAt %>',
+            updatedAt: new Date()
+          };
+
+          if (confirm("Are you sure you want to save these changes?")) {
+            let path = window.location.pathname;
+            fetch(path, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(newSeasonDoc)
+            }).then(res => {
+              console.log(res);
+              if (res.status == 200) {
+                window.location.href = '/';
+              } else {
+                alert("Something went wrong. The Season probably doesn't exist.");
+              }
+            })
+
+          } else {
+            console.log("Not saving...");
+          }
+        }
+      </script>
+    </div>
+    <div id="footer">
+      <%- include('footer')%>
     </div>
   </div>
-
-  <br>
-  <button type="button" class="btn btn-primary" onclick="finish()">Save</button>
-  <br><br><br><br><br><br><br>
-
-
-  <script>
-    let prevResults = JSON.parse('<%- JSON.stringify(season.results) %>');
-
-    function addnext(e) {
-      let input = prompt("Enter the name of the next track");
-      if (input != null) {
-        let li = document.createElement("li");
-        li.innerHTML = `<p style="text-align: left; margin: auto;">${input}</p>` + " <button type='button' class='btn btn-secondary btn-sm' onclick='addnext(event)'>+</button> <button type='button' class='btn btn-secondary btn-sm' onclick='removecurrent(event)'>-</button>";
-        insertAfter(li, e.srcElement.parentElement);
-      }
-    }
-
-    function addfirst(e) {
-      let input = prompt("Enter the name of the next track");
-      if (input != null) {
-        let li = document.createElement("li");
-        li.innerHTML = `<p style="text-align: left; margin: auto;">${input}</p>` + " <button type='button' class='btn btn-secondary btn-sm' onclick='addnext(event)'>+</button> <button type='button' class='btn btn-secondary btn-sm' onclick='removecurrent(event)'>-</button>";
-        insertAfter(li, e.srcElement);
-      }
-    }
-
-    function removecurrent(e) {
-      console.log(e.srcElement.parentElement);
-      e.srcElement.parentElement.remove();
-    }
-
-    function addNewDriver() {
-      let driverCount = parseInt('<%= season.driverTeams.length %>');
-      console.log(driverCount);
-      let newDriver = document.createElement("div");
-      newDriver.id = "driverdiv" + driverCount;
-      newDriver.innerHTML = "<label for='driver" + driverCount + "'>Driver " + (driverCount + 1) + ":</label> <input type='text' id='driver" + driverCount + "' name='driver" + driverCount + "'> <input type='text' id='teamDriver" + driverCount + "' name='teamDriver" + driverCount + "'> <input type='color' id='colorTeamDriver" + driverCount + "' name='colorTeamDriver" + driverCount + "'> <br><br>";
-      document.getElementById("drivers").appendChild(newDriver);
-    }
-
-    function insertAfter(newNode, referenceNode) {
-      referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-    }
-
-    function finish() {
-      //get all drivers
-      let driverTeams = [];
-      let drivers = document.getElementById('drivers');
-      let driverDivs = drivers.getElementsByTagName('div');
-
-      for (let i = 0; i < driverDivs.length; i++) {
-        let driver = document.getElementById('driver' + i).value;
-        let team = document.getElementById('teamDriver' + i).value;
-        let color = document.getElementById('colorTeamDriver' + i).value;
-        let driverTeam = {
-          driver: driver,
-          team: team,
-          color: color
-        };
-        driverTeams.push(driverTeam);
-      }
-      let trackNames = [];
-      let tracks = document.getElementById('tracksList');
-      tracks = tracks.getElementsByTagName('li');
-      for (let i = 0; i < tracks.length; i++) {
-        let track = tracks[i].getElementsByTagName('p')[0].innerHTML;
-        trackNames.push(track);
-      }
-
-      //build new results
-      let newResults = {};
-      trackNames.forEach(track => {
-        if (!prevResults[track]) {
-          newResults[track] = {
-            event: track,
-            raceResult: [],
-            qualiResult: [],
-            penalties: [],
-            fastestLap: "",
-            dnf: [],
-            heldAt: ""
-          };
-        } else {
-          newResults[track] = prevResults[track];
-        }
-      })
-
-      let newSeasonDoc = {
-        seasonNr: '<%= season.seasonNr %>',
-        year: '<%= season.year %>',
-        driverTeams: driverTeams,
-        tracks: trackNames,
-        results: newResults,
-        createdAt: '<%= season.createdAt %>',
-        updatedAt: new Date()
-      };
-
-      if (confirm("Are you sure you want to save these changes?")) {
-        let path = window.location.pathname;
-        fetch(path, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(newSeasonDoc)
-        }).then(res => {
-          console.log(res);
-          if (res.status == 200) {
-            window.location.href = '/';
-          } else {
-            alert("Something went wrong. The Season probably doesn't exist.");
-          }
-        })
-
-      } else {
-        console.log("Not saving...");
-      }
-    }
-  </script>
-  <%- include('footer')%>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>
 
