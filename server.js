@@ -386,6 +386,10 @@ app.get('/result/', (req, res) => {
   res.redirect('/');
 })
 
+app.get('/impressum', (req, res) => {
+  res.status(200).render('impressum.ejs');
+})
+
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next()
