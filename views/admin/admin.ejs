@@ -7,9 +7,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/slate/bootstrap.min.css" integrity="sha384-8iuq0iaMHpnH2vSyvZMSIqQuUnQA7QM+f6srIdlgBrTSEyd//AWNMyEaSF2yPzNQ" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Wruczek/Bootstrap-Cookie-Alert@gh-pages/cookiealert.css">
 </head>
 
 <body class="text-center">
+  <!-- START Bootstrap-Cookie-Alert -->
+  <div class="alert text-center cookiealert" role="alert">
+    &#x1F36A; Die Website nutzt technisch notwendige Cookies für den Loginstatus <a href="https://cookiesandyou.com/" target="_blank">Learn more</a>
+    <button type="button" class="btn btn-primary btn-sm acceptcookies">
+      OK
+    </button>
+  </div>
+  <script src="https://cdn.jsdelivr.net/gh/Wruczek/Bootstrap-Cookie-Alert@gh-pages/cookiealert.js"></script>
+  <!-- END Bootstrap-Cookie-Alert -->
+
+  <script>
+    //cookie management
+  </script>
   <style>
     html,
     body {
@@ -53,17 +67,6 @@
       <button type="button" class="btn btn-secondary">
         <a href="/editResult">Edit a Result</a>
       </button>
-    </div>
-    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="toast-header">
-        <strong class="me-auto">Cookies</strong>
-        <button type="button" class="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close">
-          <span aria-hidden="true"></span>
-        </button>
-      </div>
-      <div class="toast-body">
-        Diese Website nutzt ausschließlich technisch notwendige Cookies für den Login-Status der Nutzer.
-      </div>
     </div>
     <div id="footer">
       <%- include('../partials/footer')%>
