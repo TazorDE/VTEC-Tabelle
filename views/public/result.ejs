@@ -178,7 +178,7 @@ res.sort((a,b)=>{
                   <% if(season.results[season.tracks[i]].raceResult.length != 0){ %>
                   DNS
                   <% } %>
-            <% } %>
+                  <% } %>
                   <% if(element.driver == season.results[season.tracks[i]].fastestLap) { %>
                 </b>
                 <% } %>
@@ -246,7 +246,11 @@ res.sort((a,b)=>{
           if(qualiIndex != -1){
             qualiRes = qualiIndex + 1;
           } else {
-            qualiRes = 'DNS';
+            if(season.results[season.tracks[i]].qualiResult.length != 0){
+              qualiRes = 'DNS';
+            } else {
+              qualiRes = '';
+            }
           }
         %>
               <td style="min-width: 4em; background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;"> <%= qualiRes %> </td>
