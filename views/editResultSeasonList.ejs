@@ -34,6 +34,7 @@
       <h1>Edit Result</h1>
       <br>
       <% let sortedArray;
+      // create a sorted array of seasons by year and seasonNr
       // sort list.rows by doc.year and doc.seasonNr
       sortedArray = list.rows.sort(function(a, b) {
         if (a.doc.year < b.doc.year) {

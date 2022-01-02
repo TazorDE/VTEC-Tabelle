@@ -64,7 +64,8 @@
           <div>
             <h3>Driver / Team / Color:</h3>
             <div id=drivers>
-              <% for (let i=0; i < season.driverTeams.length; i++) { %>
+              <% //create a list of all drivers, that allows for all elements of a driver to be changed 
+                for (let i=0; i < season.driverTeams.length; i++) { %>
               <div id="driverdiv<%= i %> ">
                 <label for="driver">Driver <%= i+1 %>:</label>
                 <input type="text" id="driver<%= i %>" name="driver<%= i %>" value="<%= season.driverTeams[i].driver %>">
@@ -87,7 +88,8 @@
             <div style="text-align: center; display: flex; justify-content: center;">
               <ol id="tracksList" style="margin: auto;">
                 <button type="button" class="btn btn-secondary btn-sm" onclick="addfirst(event)">+</button>
-                <% for (let i=0; i<season.tracks.length; i++){ %>
+                <% //create a list of all tracks. Tracks can be added and removed
+                for (let i=0; i<season.tracks.length; i++){ %>
                 <li style="margin: auto;">
                   <p style="text-align: left; margin: auto;"><%= season.tracks[i] %></p>
                   <button type="button" class="btn btn-secondary btn-sm" onclick="addnext(event)">+</button>
@@ -106,8 +108,10 @@
 
 
       <script>
+        // add data from the database to the JavaScript code
         let prevResults = JSON.parse('<%- JSON.stringify(season.results) %>');
 
+        // adds a new track at the next position in the list
         function addnext(e) {
           let input = prompt("Enter the name of the next track");
           if (input != null) {
@@ -117,6 +121,7 @@
           }
         }
 
+        // adds a new track at the first position in the list
         function addfirst(e) {
           let input = prompt("Enter the name of the next track");
           if (input != null) {
@@ -126,11 +131,13 @@
           }
         }
 
+        // removes the current track from the list
         function removecurrent(e) {
           console.log(e.srcElement.parentElement);
           e.srcElement.parentElement.remove();
         }
 
+        // inserts a new driver at the next position in the list
         function addNewDriver() {
           let driverCount = parseInt('<%= season.driverTeams.length %>');
           console.log(driverCount);
@@ -140,6 +147,7 @@
           document.getElementById("drivers").appendChild(newDriver);
         }
 
+        // inserts a new DOM-Node after the given element
         function insertAfter(newNode, referenceNode) {
           referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
         }
@@ -150,6 +158,7 @@
           let drivers = document.getElementById('drivers');
           let driverDivs = drivers.getElementsByTagName('div');
 
+          // build new driverTeams array of the input values and push it to the driverTeams array
           for (let i = 0; i < driverDivs.length; i++) {
             let driver = document.getElementById('driver' + i).value;
             let team = document.getElementById('teamDriver' + i).value;
@@ -164,12 +173,15 @@
           let trackNames = [];
           let tracks = document.getElementById('tracksList');
           tracks = tracks.getElementsByTagName('li');
+          // build new trackNames array from the list of tracks
           for (let i = 0; i < tracks.length; i++) {
             let track = tracks[i].getElementsByTagName('p')[0].innerHTML;
             trackNames.push(track);
           }
 
           //build new results
+          //if results are empty, create new results array entry else
+          //add the previously saved results to the new results array
           let newResults = {};
           trackNames.forEach(track => {
             if (!prevResults[track]) {
@@ -187,6 +199,7 @@
             }
           })
 
+          //create the new structure of the season with all the new data
           let newSeasonDoc = {
             seasonNr: '<%= season.seasonNr %>',
             year: '<%= season.year %>',
@@ -197,6 +210,7 @@
             updatedAt: new Date()
           };
 
+          //handle user confirmation of the input data
           if (confirm("Are you sure you want to save these changes?")) {
             let path = window.location.pathname;
             fetch(path, {

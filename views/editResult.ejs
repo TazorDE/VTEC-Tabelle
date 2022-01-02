@@ -56,7 +56,8 @@
           <br>
           Fastest Lap:
           <select id="fastestDriver">
-            <%for(let i = 0; i<season.driverTeams.length; i++){%>
+            <%//create select options for the new fastest Driver of a race
+              for(let i = 0; i<season.driverTeams.length; i++){%>
             <option value="<%= season.driverTeams[i].driver %>"><%= season.driverTeams[i].driver %></option>
             <% } %>
           </select>
@@ -67,7 +68,8 @@
             <br>
             <div id="raceResultOrder" style="text-align: left;">
               <ol id="raceResultOrderList">
-                <% season.results[race].raceResult.forEach((element, index, object) => { %>
+                <% //create a list of the Race Result that can be edited 
+                season.results[race].raceResult.forEach((element, index, object) => { %>
                 <li><%= element %> &emsp; <button type="button" class="btn btn-primary btn-sm" onclick="addDriver(event)">+</button><button type="button" class="btn btn-primary btn-sm" onclick="rmDriver(event)">-</button>&emsp;
                   <button type="button" onclick="switchDNF(event)" <% if(season.results[race].dnf[index]){%>class="btn btn-danger btn-sm" <%}else{ %> class="btn btn-primary btn-sm" <% } %>>DNF</button>
                 </li>
@@ -80,7 +82,8 @@
           <h3>Penalties</h3>
           <div id="penalties">
             <ol id="penaltiesList" style="text-align: left;">
-              <% season.results[race].penalties.forEach(element => { %>
+              <% //create a list of the penalties that can be edited 
+              season.results[race].penalties.forEach(element => { %>
               <li><%= element.driver %> - <div style="display: inline;"><%= element.penalty %></div>s &emsp;
                 <button type="button" class="btn btn-primary btn-sm" onclick="editPenalty(event)">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
@@ -100,7 +103,8 @@
           <br>
           <div id="qualiOrder" style="text-align: left;">
             <ol id="qualiOrderList">
-              <% season.results[race].qualiResult.forEach(element => { %>
+              <% //create a list of the Qualification Order that can be edited 
+              season.results[race].qualiResult.forEach(element => { %>
               <li><%= element %> &emsp; <button type="button" class="btn btn-primary btn-sm" onclick="addQualifier(event)">+</button><button type="button" class="btn btn-primary btn-sm" onclick="removeQualifier(event)">-</button></li>
               <% }); %>
             </ol>
@@ -112,7 +116,8 @@
       <br><br><br>
 
 
-      <%let drivers=[];
+      <% //create an array of all the drivers assigned to the season
+      let drivers=[];
       for(let i=0; i<season.driverTeams.length; i++){
           drivers.push(season.driverTeams[i].driver);
       }
@@ -125,12 +130,14 @@
         let date = document.getElementById("newRaceDate");
         date.value = "<%= season.results[race].heldAt %>";
 
+        //parse data from EJS source
         let seasonDrivers = JSON.parse('<%- JSON.stringify(drivers) %>');
         let raceResult = JSON.parse('<%- JSON.stringify(season.results[race].raceResult) %>');
         let dnfList = JSON.parse('<%- JSON.stringify(season.results[race].dnf) %>');
         let penalties = JSON.parse('<%- JSON.stringify(season.results[race].penalties) %>');
         let qualiResult = JSON.parse('<%- JSON.stringify(season.results[race].qualiResult) %>');
 
+        //adds a Driver to the Result Order if the Driver exists in the season
         function addDriver(e) {
           let name = window.prompt("Enter Driver Name:");
           if (seasonDrivers.includes(name)) {
@@ -147,6 +154,7 @@
           }
         }
 
+        //removes a Driver from the current Position in the Result Order
         function rmDriver(e) {
           let list = Array.from(e.srcElement.parentElement.parentNode.children);
           let index = list.indexOf(e.srcElement.parentElement);
@@ -155,6 +163,7 @@
           e.srcElement.parentElement.remove();
         }
 
+        //adds a Driver to the beginning of the Result List
         function addRaceWinner() {
           let name = window.prompt("Enter Driver Name:");
           if (seasonDrivers.includes(name)) {
@@ -169,6 +178,7 @@
           }
         }
 
+        //edits a penalty time a driver has incurred
         function editPenalty(e) {
           let listElement;
           if (e.srcElement.parentElement.children[0].nodeName != 'DIV') {
@@ -183,6 +193,7 @@
           let penaltySeconds = parseInt(listElement.children[0].innerText);
           let driver = listElement.innerText.replace(/\s-\s.+/gm, '');
           let newPenaltySeconds = window.prompt(`Current penalty: ${penaltySeconds}s\nEnter new penalty:`);
+          //check if the new penalty is a number and if it is not empty
           if (newPenaltySeconds != null && parseInt(newPenaltySeconds)) {
             listElement.children[0].innerText = newPenaltySeconds;
             penalties.forEach(element => {
@@ -195,14 +206,17 @@
           }
         }
 
+        //adds a penalty to the list of penalties
         function addPenalty() {
           let newPenaltyDriver = window.prompt("Enter Driver Name:");
           if (seasonDrivers.includes(newPenaltyDriver)) {
             let newPenalty = window.prompt("Enter Penalty:");
+            //check if the new penalty is valid
             if (newPenalty != null && parseInt(newPenalty)) {
               console.log(newPenalty);
               console.log(newPenaltyDriver);
               let li = document.createElement("li");
+              //generate new list element
               li.innerHTML = newPenaltyDriver +
                 " - <div style=\"display: inline;\">" + newPenalty + "s </div>" +
                 " &emsp; <button type=\"button\" class=\"btn btn-primary btn-sm\" onclick=\"editPenalty(event)\">" +
@@ -221,6 +235,7 @@
           }
         }
 
+        //removes a penalty from the list of penalties
         function removePenalty(e) {
           console.log(e.srcElement.parentElement);
           let driver = e.srcElement.parentElement.innerText.replace(/\s-\s.+/gm, '');
@@ -233,11 +248,13 @@
           e.srcElement.parentElement.remove();
         }
 
+        //adds a new Driver as the first element in the Qualification list
         function addNewPole() {
           let newPoleDriver = window.prompt("Enter Driver Name:");
           if (seasonDrivers.includes(newPoleDriver)) {
             qualiResult.unshift(newPoleDriver);
             let li = document.createElement("li");
+            //create new list element
             li.innerHTML = newPoleDriver + " &emsp; <button type=\"button\" class=\"btn btn-primary btn-sm\" onclick=\"addQualifier(event)\">+</button><button type=\"button\" class=\"btn btn-primary btn-sm\" onclick=\"removeQualifier(event)\">-</button>";
             qualiList.insertBefore(li, qualiList.firstChild);
           } else {
@@ -245,6 +262,7 @@
           }
         }
 
+        //adds a Driver to the qualification list after the current driver
         function addQualifier(e) {
           let name = window.prompt("Enter Driver Name:");
           if (seasonDrivers.includes(name)) {
@@ -260,6 +278,7 @@
           }
         }
 
+        //removes a driver from the qualification list
         function removeQualifier(e) {
           let list = Array.from(e.srcElement.parentElement.parentNode.children);
           let index = list.indexOf(e.srcElement.parentElement);
@@ -267,6 +286,7 @@
           qualiResult.splice(index, 1);
         }
 
+        //sets or unsets a driver as DNF
         function switchDNF(e) {
           //console.log(e.srcElement.classList);
           let list = Array.from(e.srcElement.parentElement.parentNode.children);
@@ -285,7 +305,6 @@
         }
 
         function update() {
-
           // check if raceResults contains duplicate drivers
           if (new Set(raceResult).size !== raceResult.length) {
             alert("Please check the race result for duplicate drivers");
@@ -304,6 +323,7 @@
             dnf: dnfList,
             heldAt: date.value
           };
+          //handle user consent for updating the database
           if (confirm("Are you sure you want to update the result?")) {
             let target = window.location.pathname;
             fetch(target, {
@@ -323,6 +343,7 @@
           }
         }
 
+        //inserts a new element after the given element
         function insertAfter(newNode, referenceNode) {
           referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
         }

@@ -48,7 +48,8 @@
       <div id="results" style="display: none;">
         <label for="fastestDriverInput">Fastest driver: </label>
         <select id="fastestDriverInput">
-          <% for (let i = 0; i < season.doc.driverTeams.length; i++) { %>
+          <% // insert all drivers from season into select as options 
+            for (let i = 0; i < season.doc.driverTeams.length; i++) { %>
           <option value="<%= season.doc.driverTeams[i].driver %>"><%= season.doc.driverTeams[i].driver %></option>
           <% } %>
         </select>
@@ -160,6 +161,7 @@
           let penalties = [];
           let raceDNF = [];
 
+          //validate user input and add user input to result
           for (let i = 0; i < parseInt(document.getElementById("raceDrivers").value); i++) {
             if (!document.getElementById(`raceResult${i}`).value) {
               alert("Please select a driver for all input fields");

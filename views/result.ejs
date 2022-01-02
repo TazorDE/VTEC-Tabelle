@@ -72,7 +72,9 @@
   </style>
   <div id="container">
     <div id="body">
-      <% function getContrastYIQ(hexcolor){ hexcolor=hexcolor.replace("#", "" ); var r=parseInt(hexcolor.substr(0,2),16);
+      <% 
+      // function that chooses black or (very) light gray depending on the provided hexcolor
+      function getContrastYIQ(hexcolor){ hexcolor=hexcolor.replace("#", "" ); var r=parseInt(hexcolor.substr(0,2),16);
       var g=parseInt(hexcolor.substr(2,2),16); var b=parseInt(hexcolor.substr(4,2),16); var
       yiq=((r*299)+(g*587)+(b*114))/1000; return (yiq>= 128) ? 'black' : '#ebebeb'; } %>
 
@@ -80,7 +82,7 @@
       <p>All tables can be sorted by clicking on the respective column header.</p>
 
       <%
-
+// function that returns the points of a driver based on his positionIndex (0-9)
 function getPointsFromPosition(positionIndex) {
   let points = [25,18,15,12,10,8,6,4,2,1];
   let driverPoints = points[positionIndex];

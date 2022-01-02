@@ -33,6 +33,7 @@
     <div id="body">
       <h1>VTEC LEAGUE RESULTS</h1>
       <% let sortedArray;
+      // sort seasons by year and seasonNr
       // sort list.rows by doc.year and doc.seasonNr
       sortedArray = list.rows.sort(function(a, b) {
         if (a.doc.year < b.doc.year) {
