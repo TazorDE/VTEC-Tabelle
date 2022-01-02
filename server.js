@@ -38,12 +38,18 @@ app.use(passport.session())
 app.use(methodOverride('_method'))
 app.use(helmet())
 
-const credentials = {
-  key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem', 'utf8'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem', 'utf8'),
-  dhparam: fs.readFileSync('/var/www/example/sslcert/dh-strong.pem', 'utf8'),
-  ca: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/chain.pem', 'utf8')
-};
+let credentials;
+
+try {
+  credentials = {
+    key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem', 'utf8'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem', 'utf8'),
+    dhparam: fs.readFileSync('/var/www/example/sslcert/dh-strong.pem', 'utf8'),
+    ca: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/chain.pem', 'utf8')
+  };
+} catch (error) {
+  console.error(error);
+}
 
 app.get('/admin', checkAuthenticated, async (req, res) => {
   let user = await req.user;
@@ -55,7 +61,7 @@ app.get('/admin', checkAuthenticated, async (req, res) => {
     "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
     "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"
   });
-  res.render('admin.ejs', { name: user[0].doc.name })
+  res.render('admin/admin.ejs', { name: user[0].doc.name })
 })
 
 app.get('/', async (req, res) => {
@@ -69,7 +75,7 @@ app.get('/', async (req, res) => {
     "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
     "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"
   });
-  res.render('index.ejs', { list: list.result });
+  res.render('public/index.ejs', { list: list.result });
 
 })
 
@@ -82,7 +88,7 @@ app.get('/login', checkNotAuthenticated, (req, res) => {
     "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
     "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"
   });
-  res.render('login.ejs')
+  res.render('auth/login.ejs')
 })
 
 app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
@@ -100,7 +106,7 @@ app.get('/register', checkNotAuthenticated, (req, res) => {
     "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
     "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"
   });
-  res.render('register.ejs')
+  res.render('auth/register.ejs')
 })
 
 app.post('/register', checkNotAuthenticated, async (req, res) => {
@@ -132,10 +138,10 @@ app.get('/create', checkAuthenticated, (req, res) => {
     "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
     "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"
   });
-  res.render('create.ejs');
+  res.render('admin/season/create.ejs');
 })
 
-app.post('/create', async (req, res) => {
+app.post('/create', checkAuthenticated, async (req, res) => {
   //check if season exists
   let exists = await db.findSeasonByYearAndSeasonNr(req.body.year, req.body.season);
   exists = exists.length > 0;
@@ -166,7 +172,7 @@ app.get('/edit', checkAuthenticated, async (req, res) => {
     "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
     "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"
   });
-  res.render('list.ejs', { list: list.result });
+  res.render('admin/season/list.ejs', { list: list.result });
 })
 
 app.get('/edit/:year-:season', checkAuthenticated, async (req, res) => {
@@ -179,7 +185,7 @@ app.get('/edit/:year-:season', checkAuthenticated, async (req, res) => {
     "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
     "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"
   });
-  res.render('edit.ejs', { season: season[0].doc });
+  res.render('admin/season/edit.ejs', { season: season[0].doc });
 })
 
 app.put('/edit/:year-:season', checkAuthenticated, async (req, res) => {
@@ -207,7 +213,7 @@ app.get('/newResult', checkAuthenticated, async (req, res) => {
     "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
     "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"
   });
-  res.render('resultSeasonList.ejs', { list: list.result });
+  res.render('admin/results/resultSeasonList.ejs', { list: list.result });
 })
 
 app.get('/newResult/:year-:season', checkAuthenticated, async (req, res) => {
@@ -226,7 +232,7 @@ app.get('/newResult/:year-:season', checkAuthenticated, async (req, res) => {
       "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
       "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"
     });
-    res.status(200).render('resultRaceList.ejs', { season: exists[0].doc });
+    res.status(200).render('admin/results/resultRaceList.ejs', { season: exists[0].doc });
   }
 })
 
@@ -251,7 +257,7 @@ app.get('/newResult/:year-:season/:race', checkAuthenticated, async (req, res) =
         "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
         "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"
       });
-      res.status(200).render('newResult.ejs', { season: season });
+      res.status(200).render('admin/results/newResult.ejs', { season: season });
     } else {
       res.status(400).redirect('/newResult');
     }
@@ -296,7 +302,7 @@ app.get('/editResult', checkAuthenticated, async (req, res) => {
     "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
     "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"
   });
-  res.render('editResultSeasonList.ejs', { list: list.result });
+  res.render('admin/editResult/editResultSeasonList.ejs', { list: list.result });
 })
 
 app.get('/editResult/:year-:season', checkAuthenticated, async (req, res) => {
@@ -315,7 +321,7 @@ app.get('/editResult/:year-:season', checkAuthenticated, async (req, res) => {
       "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
       "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"
     });
-    res.status(200).render('editResultRaceList.ejs', { season: exists[0].doc });
+    res.status(200).render('admin/editResult/editResultRaceList.ejs', { season: exists[0].doc });
   }
 })
 
@@ -337,7 +343,7 @@ app.get('/editResult/:year-:season/:race', checkAuthenticated, async (req, res) 
         "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
         "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"
       });
-      res.status(200).render('editResult.ejs', { season: exists[0].doc, race: req.params.race })
+      res.status(200).render('admin/editResult/editResult.ejs', { season: exists[0].doc, race: req.params.race })
     } else {
       res.status(400).redirect(`/editResult/${req.params.year}-${req.params.season}`);
     }
@@ -378,7 +384,7 @@ app.get('/result/:year-:season', async (req, res) => {
       "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
       "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"
     });
-    res.status(200).render('result.ejs', { season: exists[0].doc });
+    res.status(200).render('public/result.ejs', { season: exists[0].doc });
   }
 });
 
