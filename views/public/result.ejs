@@ -175,8 +175,10 @@ res.sort((a,b)=>{
                   <%}%>
 
             <% } else { %>
+                  <% if(season.results[season.tracks[i]].raceResult.length != 0){ %>
                   DNS
                   <% } %>
+            <% } %>
                   <% if(element.driver == season.results[season.tracks[i]].fastestLap) { %>
                 </b>
                 <% } %>
