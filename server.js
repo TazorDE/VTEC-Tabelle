@@ -386,8 +386,8 @@ app.get('/result/', (req, res) => {
   res.redirect('/');
 })
 
-app.get('/impressum', (req, res) => {
-  res.status(200).render('impressum.ejs');
+app.get('/datenschutz', (req, res) => {
+  res.status(200).render('datenschutz.ejs');
 })
 
 function checkAuthenticated(req, res, next) {
