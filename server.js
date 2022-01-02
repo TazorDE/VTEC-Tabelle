@@ -393,7 +393,7 @@ app.get('/result/', (req, res) => {
 })
 
 app.get('/datenschutz', (req, res) => {
-  res.status(200).render('datenschutz.ejs');
+  res.status(200).render('public/datenschutz.ejs');
 })
 
 function checkAuthenticated(req, res, next) {
