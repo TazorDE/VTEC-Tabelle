@@ -17,7 +17,7 @@
       padding: 0;
       min-height: 100vh;
     }
-    
+
     #container {
       display: flex;
       flex-direction: column;
@@ -53,6 +53,17 @@
       <button type="button" class="btn btn-secondary">
         <a href="/editResult">Edit a Result</a>
       </button>
+    </div>
+    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">Cookies</strong>
+        <button type="button" class="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close">
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="toast-body">
+        Diese Website nutzt ausschließlich technisch notwendige Cookies für den Login-Status der Nutzer.
+      </div>
     </div>
     <div id="footer">
       <%- include('../partials/footer')%>
