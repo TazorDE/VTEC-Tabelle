@@ -368,7 +368,9 @@ res.sort((a,b)=>{
               <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>"> <b><%= element.team %></b> </td>
               <td></td>
               <% for(let i=0;i<season.tracks.length;i++) {%>
+              <% if(season.results[season.tracks[i]].raceResult.length != 0) %>
               <td style="min-width: 4em; background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>"> <%= element.points[i] %> </td>
+              <% } %>
               <% } %>
               <td></td>
               <td style="min-width: 4em; background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>"> <b><%= element.totalpoints %></b> </td>
