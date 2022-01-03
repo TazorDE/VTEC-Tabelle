@@ -412,4 +412,8 @@ function checkNotAuthenticated(req, res, next) {
 }
 
 http.createServer(app).listen(80);
-https.createServer(credentials, app).listen(443);
+try {
+  https.createServer(credentials, app).listen(443);
+} catch (error) {
+  console.log(error);
+}
