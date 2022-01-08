@@ -39,7 +39,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
 app.use(helmet())
-app.use(path.join(__dirname, 'images', 'favicon.ico'))
+app.use(favicon(path.join(__dirname, 'images', 'favicon.ico')))
 
 let credentials;
 
