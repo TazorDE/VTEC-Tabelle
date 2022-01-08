@@ -14,6 +14,8 @@ const flash = require('express-flash')
 const session = require('express-session')
 const methodOverride = require('method-override')
 const helmet = require('helmet')
+const favicon = require('serve-favicon')
+const path = require('path')
 
 const db = require('./src/cloudant-interaction')
 
@@ -37,6 +39,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
 app.use(helmet())
+app.use(path.join(__dirname, 'images', 'favicon.ico'))
 
 let credentials;
 
