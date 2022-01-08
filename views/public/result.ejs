@@ -2,74 +2,13 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="script-src-elem https://kryogenix.org/  https://cdn.jsdelivr.net/ 'unsafe-eval' 'unsafe-hashes' 'unsafe-inline'">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ergebnisse <%= season.year %> - <%= season.seasonNr %></title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/slate/bootstrap.min.css" integrity="sha384-8iuq0iaMHpnH2vSyvZMSIqQuUnQA7QM+f6srIdlgBrTSEyd//AWNMyEaSF2yPzNQ" crossorigin="anonymous">
-  <script src="https://kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+  <%- include('partials/head', {year: season.year, seasonNr: season.seasonNr}) %>
 </head>
 
 <body class="text-center">
 
-  <style>
-    .tablebox {
-      display: flex;
-      justify-content: center;
-    }
+  <%- include('partials/style') %>
 
-    td {
-      border-left: 1px solid #dddddd;
-      border-right: 1px solid #dddddd;
-      text-align: center;
-      padding: 2px;
-      font-family: 'Source Sans Pro', sans-serif;
-    }
-
-    @media only screen and (max-width: 1550px) {
-      .tablebox {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        max-width: fit-content;
-      }
-    }
-
-    @media only screen and (max-width: 1660px) {
-      .sortable {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-      }
-
-      .tablebox {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        max-width: max-content;
-      }
-    }
-  </style>
-
-  <style>
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-    }
-
-    #container {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    #footer {
-      margin-top: auto;
-    }
-  </style>
   <div id="container">
     <div id="body">
       <% 
@@ -82,65 +21,65 @@
       <p>All tables can be sorted by clicking on the respective column header.</p>
 
       <%
-// function that returns the points of a driver based on his positionIndex (0-9)
-function getPointsFromPosition(positionIndex) {
-  let points = [25,18,15,12,10,8,6,4,2,1];
-  let driverPoints = points[positionIndex];
-  if(driverPoints != undefined) {
-    return driverPoints;
-  }else{
-    return 0;
-  }
-}
-
-//create array with driver objects that contain all points (each race & overall)
-const res = [];
-season.driverTeams.forEach(element => {
-  element['points'] = [];
-  element['fastestLap'] = [];
-  element['overallpoints'] = 0;
-  element['bestPositionIndex'] = 999;
-
-  for(key in season.results){
-    let positionIndex = season.results[key].raceResult.indexOf(element.driver);
-    if(positionIndex != -1){
-      element.points.push(getPointsFromPosition(positionIndex));
-      if(positionIndex < element.bestPositionIndex){
-        element.bestPositionIndex = positionIndex;
-      }
-      if(season.results[key].fastestLap == element.driver){
-        if(positionIndex < 10){
-          element.fastestLap.push(1);
-        } else {
-          element.fastestLap.push(0);
+      // function that returns the points of a driver based on his positionIndex (0-9)
+      function getPointsFromPosition(positionIndex) {
+        let points = [25,18,15,12,10,8,6,4,2,1];
+        let driverPoints = points[positionIndex];
+        if(driverPoints != undefined) {
+          return driverPoints;
+        }else{
+          return 0;
         }
-      }else{
-        element.fastestLap.push(0);
       }
-    }else{
-      element.points.push(0);
-      element.fastestLap.push(0);
-    }
-  }
-  element.points.forEach(point => {
-    element.overallpoints += point;
-  });
-  element.fastestLap.forEach(point => {
-    element.overallpoints += point;
-  });
-  res.push(element);
-});
-//sort res array by overallpoints
-res.sort((a,b)=>{
-  return parseInt(b.overallpoints) - parseInt(a.overallpoints);
-});
-//sort res array by bestPositionIndex (if same points)
-res.sort((a,b)=>{
-  if(a.overallpoints == b.overallpoints){
-    return parseInt(a.bestPositionIndex) - parseInt(b.bestPositionIndex);
-  }
-  return 0;
-});
+
+      //create array with driver objects that contain all points (each race & overall)
+      const res = [];
+      season.driverTeams.forEach(element => {
+        element['points'] = [];
+        element['fastestLap'] = [];
+        element['overallpoints'] = 0;
+        element['bestPositionIndex'] = 999;
+
+        for(key in season.results){
+          let positionIndex = season.results[key].raceResult.indexOf(element.driver);
+          if(positionIndex != -1){
+            element.points.push(getPointsFromPosition(positionIndex));
+            if(positionIndex < element.bestPositionIndex){
+              element.bestPositionIndex = positionIndex;
+            }
+            if(season.results[key].fastestLap == element.driver){
+              if(positionIndex < 10){
+                element.fastestLap.push(1);
+              } else {
+                element.fastestLap.push(0);
+              }
+            }else{
+              element.fastestLap.push(0);
+            }
+          }else{
+            element.points.push(0);
+            element.fastestLap.push(0);
+          }
+        }
+        element.points.forEach(point => {
+          element.overallpoints += point;
+        });
+        element.fastestLap.forEach(point => {
+          element.overallpoints += point;
+        });
+        res.push(element);
+      });
+      //sort res array by overallpoints
+      res.sort((a,b)=>{
+        return parseInt(b.overallpoints) - parseInt(a.overallpoints);
+      });
+      //sort res array by bestPositionIndex (if same points)
+      res.sort((a,b)=>{
+        if(a.overallpoints == b.overallpoints){
+          return parseInt(a.bestPositionIndex) - parseInt(b.bestPositionIndex);
+        }
+        return 0;
+      });
 %>
 
       <h3>Positionen:</h3>
@@ -161,28 +100,15 @@ res.sort((a,b)=>{
               <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;"> <b><%= element.driver %></b> </td>
               <td></td>
               <% for(let i=0; i < season.tracks.length; i++) { %>
-              <td style="min-width:4em; background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;">
-                <% let currPosIndex = season.results[season.tracks[i]].raceResult.indexOf(element.driver);
-          if(currPosIndex != -1){%>
-                <% if(element.driver == season.results[season.tracks[i]].fastestLap) { %>
-                <b>
-                  <% } %>
-
-                  <%= season.results[season.tracks[i]].raceResult.indexOf(element.driver) +1 %>
-
-                  <% if( season.results[season.tracks[i]].dnf[currPosIndex] ){%>
-                  (DNF)
-                  <%}%>
-
-            <% } else { %>
-                  <% if(season.results[season.tracks[i]].raceResult.length != 0){ %>
-                  DNS
-                  <% } %>
-                  <% } %>
-                  <% if(element.driver == season.results[season.tracks[i]].fastestLap) { %>
-                </b>
-                <% } %>
-              </td>
+              <% let currPosIndex = season.results[season.tracks[i]].raceResult.indexOf(element.driver); %>
+              <%- include('partials/driverResultTableElement', {
+                  bg: element.color,
+                  color: getContrastYIQ(element.color),
+                  resIndex: currPosIndex,
+                  tookPlace: season.results[season.tracks[i]].raceResult.length != 0,
+                  fastest: element.driver == season.results[season.tracks[i]].fastestLap,
+                  dnf: season.results[season.tracks[i]].dnf[currPosIndex],
+                }) %>
               <% } %>
               <td></td>
               <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;">
@@ -208,15 +134,19 @@ res.sort((a,b)=>{
             <tr>
               <% for(let i=0; i<season.tracks.length; i++){ %>
               <% 
-          let currDriver = season.results[season.tracks[i]].fastestLap;
-          let currColor = '';
-          season.driverTeams.find(element => {
-            if(element.driver == currDriver){
-              currColor = element.color;
-            }
-          });
-          %>
-              <td style="min-width: 4em; border: 1px solid #dddddd; background-color: <%= currColor %>; color: <%= getContrastYIQ(currColor) %>;"><%= season.results[season.tracks[i]].fastestLap %></td>
+                let currDriver = season.results[season.tracks[i]].fastestLap;
+                let currColor = '';
+                season.driverTeams.find(element => {
+                  if(element.driver == currDriver){
+                    currColor = element.color;
+                  }
+                });
+                %>
+              <%- include('partials/fastestLapElement',{
+                  bg: currColor,
+                  color: getContrastYIQ(currColor),
+                  driver: currDriver
+                }) %>
               <% } %>
             </tr>
           </tbody>
@@ -240,20 +170,14 @@ res.sort((a,b)=>{
               <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;"><b><%= element.driver %></b></td>
               <td></td>
               <% for(let i=0;i<season.tracks.length;i++) {%>
-              <%
-          let qualiIndex = season.results[season.tracks[i]].qualiResult.indexOf(element.driver);
-          let qualiRes;
-          if(qualiIndex != -1){
-            qualiRes = qualiIndex + 1;
-          } else {
-            if(season.results[season.tracks[i]].qualiResult.length != 0){
-              qualiRes = 'DNS';
-            } else {
-              qualiRes = '';
-            }
-          }
-        %>
-              <td style="min-width: 4em; background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;"> <%= qualiRes %> </td>
+
+              <%let qualiIndex = season.results[season.tracks[i]].qualiResult.indexOf(element.driver);%>
+              <%- include('partials/qualiTableElement.ejs', {
+                bgcolor: element.color,
+                color: getContrastYIQ(element.color),
+                qualiIndex: qualiIndex,
+                qualiHasResult: season.results[season.tracks[i]].qualiResult.length != 0
+              }) %>
               <% } %>
             </tr>
             <% });%>

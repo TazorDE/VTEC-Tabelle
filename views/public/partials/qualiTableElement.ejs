@@ -1,0 +1,9 @@
+<td style="min-width: 4em; background-color: <%= bgcolor %>; color: <%= color %>;">
+  <% if(qualiIndex != -1){ %>
+  <%= qualiIndex+1 %>
+  <% } else { %>
+    <% if(qualiHasResult){ %>
+    DNS
+    <% } %>
+  <% } %>
+</td>
