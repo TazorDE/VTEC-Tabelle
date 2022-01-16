@@ -19,13 +19,14 @@ const path = require('path')
 
 const db = require('./src/cloudant-interaction')
 
-const header = `
+const header = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
     "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
     "Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
     "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*",
-    "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"`
+    "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*"
+}
 
 const initializePassport = require('./passport-config')
 initializePassport(
@@ -64,8 +65,7 @@ try {
 
 app.get('/admin', checkAuthenticated, async (req, res) => {
     let user = await req.user;
-    res.set({
-    });
+    res.set(header);
     res.render('admin/admin.ejs', { name: user[0].doc.name })
 })
 
@@ -177,7 +177,7 @@ app.get('/newResult/:year-:season', checkAuthenticated, async (req, res) => {
         //season does not exist
         res.status(400).redirect('/newResult');
     } else {
-        res.set(headers);
+        res.set(header);
         res.status(200).render('admin/results/resultRaceList.ejs', { season: exists[0].doc });
     }
 })
@@ -195,7 +195,7 @@ app.get('/newResult/:year-:season/:race', checkAuthenticated, async (req, res) =
                 doc: exists[0].doc,
                 track: req.params.race
             };
-            res.set(headers);
+            res.set(header);
             res.status(200).render('admin/results/newResult.ejs', { season: season });
         } else {
             res.status(400).redirect('/newResult');
@@ -214,7 +214,7 @@ app.post('/newResult/:year-:season/:race', checkAuthenticated, async (req, res) 
             if (db.addRaceResultToSeason(req.params.year, req.params.season, req.params.race, req.body) == null) {
                 res.status(400).send();
             } else {
-                res.set(headers);
+                res.set(header);
                 res.status(200).send();
             }
         } else {
@@ -238,7 +238,7 @@ app.get('/editResult/:year-:season', checkAuthenticated, async (req, res) => {
         //season does not exist
         res.status(400).redirect('/editResult');
     } else {
-        res.set(headers);
+        res.set(header);
         res.status(200).render('admin/editResult/editResultRaceList.ejs', { season: exists[0].doc });
     }
 })
@@ -253,7 +253,7 @@ app.get('/editResult/:year-:season/:race', checkAuthenticated, async (req, res) 
     } else {
         //check if race exists in season and race is not empty
         if (exists[0].doc.tracks.includes(req.params.race) && exists[0].doc.results[req.params.race].fastestLap != "") {
-            res.set(headers);
+            res.set(header);
             res.status(200).render('admin/editResult/editResult.ejs', { season: exists[0].doc, race: req.params.race })
         } else {
             res.status(400).redirect(`/editResult/${req.params.year}-${req.params.season}`);
@@ -287,7 +287,7 @@ app.get('/result/:year-:season', async (req, res) => {
         //season does not exist
         res.status(400).redirect('/');
     } else {
-        res.set(headers);
+        res.set(header);
         res.status(200).render('public/result.ejs', { season: exists[0].doc });
     }
 });
