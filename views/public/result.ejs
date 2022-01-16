@@ -86,6 +86,7 @@
       <div class="tablebox">
         <table class="sortable">
           <thead>
+            <th></th>
             <th>Driver</th>
             <th style="min-width: 2em;"></th>
             <% season.tracks.forEach(element => { %>
@@ -95,8 +96,10 @@
             <th>Points</th>
           </thead>
           <tbody>
-            <% res.forEach((element) => { %>
+            <% let pos = 1; 
+              res.forEach((element) => { %>
             <tr>
+              <td style="border: none;" > <b><%= pos %>. <% pos++ %></b></td>
               <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;"> <b><%= element.driver %></b> </td>
               <td></td>
               <% for(let i=0; i < season.tracks.length; i++) { %>
