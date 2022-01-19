@@ -99,7 +99,7 @@
             <% let pos = 1; 
               res.forEach((element) => { %>
             <tr>
-              <td style="border: none;" > <b><%= pos %>. <% pos++ %></b></td>
+              <td style="border: none;"> <b><%= pos %>. <% pos++ %></b></td>
               <td style="background-color: <%= element.color %>; color: <%= getContrastYIQ(element.color) %>;"> <b><%= element.driver %></b> </td>
               <td></td>
               <% for(let i=0; i < season.tracks.length; i++) { %>
@@ -309,6 +309,107 @@
         </table>
       </div>
     </div>
+
+    <% 
+      // create an array of the points for each driver
+      let driverPoints = {};
+      let driverProgression = {
+        first: {
+          x: [],
+          y: [],
+          mode: 'none',
+          showlegend: false
+        }
+      };
+      for (key in season.results) {
+        driverProgression.first.x.push(key);
+        driverProgression.first.y.push(0);
+
+        if(season.results[key].raceResult.length > 0){
+          // get the points for each driver
+          season.results[key].raceResult.forEach((driver, idx) => {
+            // get the points from the current index
+            let currPoints = getPointsFromPosition(idx);
+            // add fastest Lap, if idx < 10
+            if(idx < 10 && season.results[key].fastestLap == driver){
+              currPoints += 1;
+            }
+            
+            // check if driver is already in the driverPoints object
+            if(driverPoints[driver] == undefined){
+              driverPoints[driver] = currPoints;
+            }else{
+              driverPoints[driver] += currPoints;
+            }
+
+            // get color of driver from driverTeams
+            let driverTeam = season.driverTeams.filter(team => {
+              return team.driver == driver;
+            });
+            console.log(driverTeam);
+
+            // check if driver is already in the driverProgression object
+            if(driverProgression[driver] == undefined){
+              
+              driverProgression[driver] = {
+                x: [key],
+                y: [driverPoints[driver]],
+                mode: 'lines+markers',
+                name: driver,
+                type: 'scatter',
+                line: {
+                  color: driverTeam[0].color
+                }
+              };
+            }else{
+              driverProgression[driver].x.push(key);
+              driverProgression[driver].y.push(driverPoints[driver]);
+            }
+          });
+        }
+      };
+      let data = [];
+      for (driver in driverProgression){
+        data.push(driverProgression[driver]);
+      }
+    %>
+    <br>
+    <div id="graph" class="plotbox"></div>
+
+    <script>
+      let graph = document.getElementById('graph');
+
+      let data = <%- JSON.stringify(data) %>;
+      let races = <%- JSON.stringify(season.tracks) %>;
+      let layout = {
+        title: 'Driver progression',
+        xaxis: {
+          title: 'Events',
+          gridcolor: '#d3d3d3',
+          linecolor: '#d3d3d3'
+        },
+        yaxis: {
+          title: 'Points',
+          gridcolor: '#d3d3d3',
+          zerolinecolor: '#d3d3d3'
+        },
+        plot_bgcolor: '#272b30',
+        modebar: {
+          bgcolor: '#272b30'
+        },
+        legend: {
+          bgcolor: '#272b30',
+          font: {
+            color: '#fff'
+          }
+        },
+        paper_bgcolor: '#272b30',
+        font: {
+          color: '#fff'
+        }
+      };
+      Plotly.newPlot(graph, data, layout, {responsive: true});
+    </script>
     <br><br>
     <div id="footer">
       <%- include('../partials/footer')%>
