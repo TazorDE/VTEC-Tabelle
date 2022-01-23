@@ -53,10 +53,8 @@
     %>
 
       <% sortedArray.forEach(element => { %>
-      <button type="button" class="btn btn-primary">
-        <a href="/result/<%= element.doc.year %>-<%= element.doc.seasonNr %>">
-          <%= element.doc.year %> Season: <%= element.doc.seasonNr %>
-        </a>
+      <button type="button" class="btn btn-primary" onclick="window.location.href='/result/<%= element.doc.year %>-<%= element.doc.seasonNr %>'">
+        <%= element.doc.year %> Season: <%= element.doc.seasonNr %>
       </button>
       <br>
       <br>

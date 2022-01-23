@@ -35,10 +35,13 @@
       <h3>Choose the Race for the new results:</h3>
       <div style="margin: auto; max-width: 80%; text-align: center;">
         <% season.tracks.forEach(element => { %>
-        <button type="button" <%if(season.results[element].fastestLap == ""){%> class="btn btn-info" <% } else { %> class="btn btn-secondary" disabled <% }%> style="margin-top: 1rem; margin-right: 1%;">
-          <a href="/newResult/<%= season.year %>-<%= season.seasonNr %>/<%= element %>">
-            <%= element %>
-          </a>
+        <button type="button" <%if(season.results[element].fastestLap == ""){%>
+          class="btn btn-info" 
+        <% } else { %>
+          class="btn btn-secondary" disabled 
+        <% }%>
+        style="margin-top: 1rem; margin-right: 1%;" onclick="window.location.href='/newResult/<%= season.year %>-<%= season.seasonNr %>/<%= element %>'">
+          <%= element %>
         </button>
 
         <% }); %>
