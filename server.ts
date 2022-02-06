@@ -31,8 +31,8 @@ const header = {
 const initializePassport = require('./passport-config')
 initializePassport(
     passport,
-    async email => await db.findUserByEmail(email),
-    async id => await db.findUserById(id)
+    async (email: any) => await db.findUserByEmail(email),
+    async (id: any) => await db.findUserById(id)
 )
 
 app.set('view-engine', 'ejs')
@@ -48,7 +48,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
 app.use(helmet())
-app.use(favicon(path.join(__dirname, 'images', 'favicon.ico')))
+app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')))
 
 let credentials;
 
@@ -63,13 +63,13 @@ try {
     console.error(error);
 }
 
-app.get('/admin', checkAuthenticated, async (req, res) => {
+app.get('/admin', checkAuthenticated, async (req: { user: any; }, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string, arg1: { name: any; }) => void; }) => {
     let user = await req.user;
     res.set(header);
     res.render('admin/admin.ejs', { name: user[0].doc.name })
 })
 
-app.get('/', async (req, res) => {
+app.get('/', async (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string, arg1: { list: any; }) => void; }) => {
     let list = await db.getAllSeasons();
     //get list of all seasons
     res.set(header);
@@ -77,7 +77,7 @@ app.get('/', async (req, res) => {
 
 })
 
-app.get('/login', checkNotAuthenticated, (req, res) => {
+app.get('/login', checkNotAuthenticated, (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string) => void; }) => {
     res.set(header);
     res.render('auth/login.ejs')
 })
@@ -88,12 +88,12 @@ app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
     failureFlash: true
 }))
 
-app.get('/register', checkNotAuthenticated, (req, res) => {
+app.get('/register', checkNotAuthenticated, (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string) => void; }) => {
     res.set(header);
     res.render('auth/register.ejs')
 })
 
-app.post('/register', checkNotAuthenticated, async (req, res) => {
+app.post('/register', checkNotAuthenticated, async (req: { body: { password: any; name: any; email: any; }; }, res: { redirect: (arg0: string) => void; }) => {
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10)
         //check
@@ -104,18 +104,18 @@ app.post('/register', checkNotAuthenticated, async (req, res) => {
     }
 })
 
-app.delete('/logout', (req, res) => {
+app.delete('/logout', (req: { logOut: () => void; }, res: { redirect: (arg0: string) => void; }) => {
     req.logOut()
     res.redirect('/')
 })
 
-app.get('/create', checkAuthenticated, (req, res) => {
+app.get('/create', checkAuthenticated, (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string) => void; }) => {
     //render season creation page
     res.set(header);
     res.render('admin/season/create.ejs');
 })
 
-app.post('/create', checkAuthenticated, async (req, res) => {
+app.post('/create', checkAuthenticated, async (req: { body: { year: any; season: any; driverTeams: any; tracks: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; redirect: { (arg0: string): void; new(): any; }; send: { (): void; new(): any; }; }; }) => {
     //check if season exists
     let exists = await db.findSeasonByYearAndSeasonNr(req.body.year, req.body.season);
     exists = exists.length > 0;
@@ -135,20 +135,20 @@ app.post('/create', checkAuthenticated, async (req, res) => {
     }
 })
 
-app.get('/edit', checkAuthenticated, async (req, res) => {
+app.get('/edit', checkAuthenticated, async (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string, arg1: { list: any; }) => void; }) => {
     let list = await db.getAllSeasons();
     //get list of all seasons
     res.set(header);
     res.render('admin/season/list.ejs', { list: list.result });
 })
 
-app.get('/edit/:year-:season', checkAuthenticated, async (req, res) => {
+app.get('/edit/:year-:season', checkAuthenticated, async (req: { params: { year: any; season: any; }; }, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string, arg1: { season: any; }) => void; }) => {
     let season = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
     res.set(header);
     res.render('admin/season/edit.ejs', { season: season[0].doc });
 })
 
-app.put('/edit/:year-:season', checkAuthenticated, async (req, res) => {
+app.put('/edit/:year-:season', checkAuthenticated, async (req: { params: { year: any; season: any; }; body: any; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (): void; new(): any; }; }; }) => {
     //check if season exists
     let exists = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
     exists = exists.length > 0;
@@ -162,17 +162,17 @@ app.put('/edit/:year-:season', checkAuthenticated, async (req, res) => {
     }
 })
 
-app.get('/newResult', checkAuthenticated, async (req, res) => {
+app.get('/newResult', checkAuthenticated, async (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string, arg1: { list: any; }) => void; }) => {
     let list = await db.getAllSeasons();
     //get list of all seasons
     res.set(header);
     res.render('admin/results/resultSeasonList.ejs', { list: list.result });
 })
 
-app.get('/newResult/:year-:season', checkAuthenticated, async (req, res) => {
+app.get('/newResult/:year-:season', checkAuthenticated, async (req: { params: { year: any; season: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; redirect: { (arg0: string): void; new(): any; }; render: { (arg0: string, arg1: { season: any; }): void; new(): any; }; }; set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; }) => {
     //check if season exists
     let exists = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
-    existsbool = exists.length > 0;
+    const existsbool = exists.length > 0;
     if (!existsbool) {
         //season does not exist
         res.status(400).redirect('/newResult');
@@ -182,10 +182,10 @@ app.get('/newResult/:year-:season', checkAuthenticated, async (req, res) => {
     }
 })
 
-app.get('/newResult/:year-:season/:race', checkAuthenticated, async (req, res) => {
+app.get('/newResult/:year-:season/:race', checkAuthenticated, async (req: { params: { year: any; season: any; race: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; redirect: { (arg0: string): void; new(): any; }; render: { (arg0: string, arg1: { season: { doc: any; track: any; }; }): void; new(): any; }; }; set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; }) => {
     //check if season exists
     let exists = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
-    existsbool = exists.length > 0;
+    const existsbool = exists.length > 0;
     if (!existsbool) {
         //season does not exist
         res.status(400).redirect('/newResult');
@@ -203,9 +203,9 @@ app.get('/newResult/:year-:season/:race', checkAuthenticated, async (req, res) =
     }
 })
 
-app.post('/newResult/:year-:season/:race', checkAuthenticated, async (req, res) => {
+app.post('/newResult/:year-:season/:race', checkAuthenticated, async (req: { params: { year: any; season: any; race: any; }; body: any; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (): void; new(): any; }; }; set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; }) => {
     let exists = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
-    existsbool = exists.length > 0;
+    const existsbool = exists.length > 0;
     if (!existsbool) {
         res.status(400).send();
     } else {
@@ -223,17 +223,17 @@ app.post('/newResult/:year-:season/:race', checkAuthenticated, async (req, res) 
     }
 })
 
-app.get('/editResult', checkAuthenticated, async (req, res) => {
+app.get('/editResult', checkAuthenticated, async (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string, arg1: { list: any; }) => void; }) => {
     let list = await db.getAllSeasons();
     //get list of all seasons
     res.set(header);
     res.render('admin/editResult/editResultSeasonList.ejs', { list: list.result });
 })
 
-app.get('/editResult/:year-:season', checkAuthenticated, async (req, res) => {
+app.get('/editResult/:year-:season', checkAuthenticated, async (req: { params: { year: any; season: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; redirect: { (arg0: string): void; new(): any; }; render: { (arg0: string, arg1: { season: any; }): void; new(): any; }; }; set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; }) => {
     //check if season exists
     let exists = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
-    existsbool = exists.length > 0;
+    const existsbool = exists.length > 0;
     if (!existsbool) {
         //season does not exist
         res.status(400).redirect('/editResult');
@@ -243,10 +243,10 @@ app.get('/editResult/:year-:season', checkAuthenticated, async (req, res) => {
     }
 })
 
-app.get('/editResult/:year-:season/:race', checkAuthenticated, async (req, res) => {
+app.get('/editResult/:year-:season/:race', checkAuthenticated, async (req: { params: { year: any; season: any; race: string | number; }; }, res: { status: (arg0: number) => { (): any; new(): any; redirect: { (arg0: string): void; new(): any; }; render: { (arg0: string, arg1: { season: any; race: any; }): void; new(): any; }; }; set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; }) => {
     //check if season exists
     let exists = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
-    existsbool = exists.length > 0;
+    const existsbool = exists.length > 0;
     if (!existsbool) {
         //season does not exist
         res.status(400).redirect('/editResult');
@@ -261,9 +261,9 @@ app.get('/editResult/:year-:season/:race', checkAuthenticated, async (req, res) 
     }
 })
 
-app.post('/editResult/:year-:season/:race', checkAuthenticated, async (req, res) => {
+app.post('/editResult/:year-:season/:race', checkAuthenticated, async (req: { params: { year: any; season: any; race: any; }; body: any; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (): void; new(): any; }; }; }) => {
     let exists = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
-    existsbool = exists.length > 0;
+    const existsbool = exists.length > 0;
     if (!existsbool) {
         res.status(400).send();
     } else {
@@ -279,10 +279,10 @@ app.post('/editResult/:year-:season/:race', checkAuthenticated, async (req, res)
     }
 })
 
-app.get('/result/:year-:season', async (req, res) => {
+app.get('/result/:year-:season', async (req: { params: { year: any; season: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; redirect: { (arg0: string): void; new(): any; }; render: { (arg0: string, arg1: { season: any; }): void; new(): any; }; }; set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; }) => {
     //check if season exists
     let exists = await db.findSeasonByYearAndSeasonNr(req.params.year, req.params.season);
-    existsbool = exists.length > 0;
+    const existsbool = exists.length > 0;
     if (!existsbool) {
         //season does not exist
         res.status(400).redirect('/');
@@ -292,15 +292,15 @@ app.get('/result/:year-:season', async (req, res) => {
     }
 });
 
-app.get('/result/', (req, res) => {
+app.get('/result/', (req: any, res: { redirect: (arg0: string) => void; }) => {
     res.redirect('/');
 })
 
-app.get('/datenschutz', (req, res) => {
+app.get('/datenschutz', (req: any, res: { status: (arg0: number) => { (): any; new(): any; render: { (arg0: string): void; new(): any; }; }; }) => {
     res.status(200).render('public/datenschutz.ejs');
 })
 
-function checkAuthenticated(req, res, next) {
+function checkAuthenticated(req: { isAuthenticated: () => any; }, res: { redirect: (arg0: string) => void; }, next: () => any) {
     if (req.isAuthenticated()) {
         return next()
     }
@@ -308,7 +308,7 @@ function checkAuthenticated(req, res, next) {
     res.redirect('/login')
 }
 
-function checkNotAuthenticated(req, res, next) {
+function checkNotAuthenticated(req: { isAuthenticated: () => any; }, res: { redirect: (arg0: string) => any; }, next: () => void) {
     if (req.isAuthenticated()) {
         return res.redirect('/admin')
     }
