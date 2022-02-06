@@ -1,0 +1,1 @@
+copyfiles "public/**/*" "views/**/*" dist

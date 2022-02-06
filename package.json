@@ -4,7 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "devStart": "nodemon server.js"
+    "devStart": "npm run dev:css && ts-node server.ts",
+    "start": "npm run build && node dist/server.js",
+    "dev:css": "sass --no-source-map src/styles:public/css",
+    "build:css": "sass --no-source-map src/styles:dist/public/css",
+    "build:ts": "tsc -p tsconfig.json",
+    "build:files": "copyjs.cmd",
+    "build": "rmdir /s dist && npm run build:css && npm run build:ts && npm run build:files"
   },
   "author": "Malte Teichert",
   "license": "ISC",
@@ -19,10 +25,14 @@
     "method-override": "^3.0.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
+    "sass": "^1.49.7",
     "serve-favicon": "^2.5.0",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.5",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "copyfiles": "^2.4.1",
     "dotenv": "^8.0.0",
     "nodemon": "^2.0.15"
   }
