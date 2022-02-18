@@ -17,6 +17,7 @@
   "dependencies": {
     "@ibm-cloud/cloudant": "^0.0.23",
     "bcrypt": "^5.0.1",
+    "country-list": "^2.2.0",
     "ejs": "^2.6.2",
     "express": "^4.17.1",
     "express-flash": "0.0.2",
@@ -32,6 +33,8 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/country-list": "^2.1.0",
+    "@types/uuid": "^8.3.4",
     "copyfiles": "^2.4.1",
     "dotenv": "^8.0.0",
     "nodemon": "^2.0.15"
