@@ -53,7 +53,7 @@ type season = {
 // -----------------------------------------------------------
 
 //create a new user
-async function createUser(name: any, email: any, password: any) {
+export async function createUser(name: any, email: any, password: any) {
     //check if user already exists
     const result = await findUserByEmail(email);
     if (result.length > 0) {
@@ -75,7 +75,7 @@ async function createUser(name: any, email: any, password: any) {
 }
 
 //get all user documents
-async function getAllUsers() {
+export async function getAllUsers() {
     return await client.postAllDocs({
         db: userdb,
         includeDocs: true
@@ -83,13 +83,13 @@ async function getAllUsers() {
 }
 
 //find user by id
-async function findUserById(id: any) {
+export async function findUserById(id: any) {
     let data = await getAllUsers();
     return data.result.rows.filter(user => { user.doc?._id === id });
 }
 
 //find user by email
-async function findUserByEmail(email: any) {
+export async function findUserByEmail(email: any) {
     let data = await getAllUsers();
     return data.result.rows.filter(user => user.doc?.email === email);
 }
@@ -99,7 +99,7 @@ async function findUserByEmail(email: any) {
 // -----------------------------------------------------------
 
 // create a new driver
-async function createDriver(name: string) {
+export async function createDriver(name: string) {
     return client.postDocument({
         db: driverdb,
         document: {
@@ -111,7 +111,7 @@ async function createDriver(name: string) {
 }
 
 // get all drivers
-async function getAllDrivers() {
+export async function getAllDrivers() {
     return await client.postAllDocs({
         db: driverdb,
         includeDocs: true
@@ -119,12 +119,12 @@ async function getAllDrivers() {
 }
 
 // find driver by id
-async function findDriverById(id: string) {
+export async function findDriverById(id: string) {
     return await client.getDocument({ docId: id, db: driverdb });
 }
 
 // update a driver
-async function updateDriver(id: string, name: string) {
+export async function updateDriver(id: string, name: string) {
     let oldDoc = await findDriverById(id);
     return await client.postDocument({
         db: driverdb,
@@ -143,7 +143,7 @@ async function updateDriver(id: string, name: string) {
 // -----------------------------------------------------------
 
 // create a new event
-async function createEvent(threeLetterCode: string, country: string) {
+export async function createEvent(threeLetterCode: string, country: string) {
 
     // check if country exists
     let countryExists = await checkCountryExists(country);
@@ -165,7 +165,7 @@ async function createEvent(threeLetterCode: string, country: string) {
 }
 
 // check if country exists
-async function checkCountryExists(country: string) {
+export async function checkCountryExists(country: string) {
     let countries = countryList.getNames();
     if (countries.includes(country)) {
         return true;
@@ -175,7 +175,7 @@ async function checkCountryExists(country: string) {
 }
 
 // get all events
-async function getAllEvents() {
+export async function getAllEvents() {
     return await client.postAllDocs({
         db: eventdb,
         includeDocs: true
@@ -183,12 +183,12 @@ async function getAllEvents() {
 }
 
 // find event by id
-async function findEventById(id: string) {
+export async function findEventById(id: string) {
     return await client.getDocument({ docId: id, db: eventdb });
 }
 
 // update an event
-async function updateEvent(id: string, threeLetterCode: string, country: string) {
+export async function updateEvent(id: string, threeLetterCode: string, country: string) {
 
     // check if country exists
     let countryExists = await checkCountryExists(country);
@@ -216,7 +216,7 @@ async function updateEvent(id: string, threeLetterCode: string, country: string)
 // -----------------------------------------------------------
 
 // create a new season
-async function createSeason(
+export async function createSeason(
     year: string,
     seasonNr: string,
     teams: { name: string; drivers: string[]; color: string; }[],
@@ -264,7 +264,7 @@ async function createSeason(
 }
 
 // get all seasons
-async function getAllSeasons() {
+export async function getAllSeasons() {
     return await client.postAllDocs({
         db: seasondb,
         includeDocs: true
@@ -272,25 +272,25 @@ async function getAllSeasons() {
 }
 
 // get all seasons for a specific year
-async function getAllSeasonsForYear(year: string) {
+export async function getAllSeasonsForYear(year: string) {
     let data = await getAllSeasons();
     return data.result.rows.filter(season => season.doc?.year === year);
 }
 
 // get season by year and season number
-async function getSeasonByYearAndSeason(year: string, seasonNr: string) {
+export async function getSeasonByYearAndSeason(year: string, seasonNr: string) {
     let data = await getAllSeasons();
     return data.result.rows.filter(season => season.doc?.year === year && season.doc?.season === seasonNr);
 }
 
 // check if season exists
-async function checkSeasonExists(year: string, seasonNr: string) {
+export async function checkSeasonExists(year: string, seasonNr: string) {
     let data = await getAllSeasons();
     return data.result.rows.filter(season => season.doc?.year === year && season.doc?.season === seasonNr).length > 0;
 }
 
 // add new result to season / edit result
-async function addResultToSeason(year: string, seasonNr: string, event: string, result: raceResult) {
+export async function addResultToSeason(year: string, seasonNr: string, event: string, result: raceResult) {
     // get season data
     let season = await getSeasonByYearAndSeason(year, seasonNr);
     // find event in season
@@ -311,7 +311,7 @@ async function addResultToSeason(year: string, seasonNr: string, event: string, 
 }
 
 // update a season //not yet fully tested
-async function updateSeason(
+export async function updateSeason(
     year: string,
     seasonNr: string,
     teams: [{ name: string, drivers: string[], color: string }],
