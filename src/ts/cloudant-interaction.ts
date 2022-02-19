@@ -120,17 +120,19 @@ async function getAllDrivers() {
 
 // find driver by id
 async function findDriverById(id: string) {
-    let data = await getAllDrivers();
-    return data.result.rows.filter((driver) => { return driver.doc?._id === id });
+    return await client.getDocument({ docId: id, db: driverdb });
 }
 
 // update a driver
 async function updateDriver(id: string, name: string) {
-    return client.postDocument({
+    let oldDoc = await findDriverById(id);
+    return await client.postDocument({
         db: driverdb,
         document: {
             _id: id,
+            _rev: oldDoc.result._rev,
             name: name,
+            createdAt: oldDoc.result.createdAt,
             updatedAt: new Date()
         }
     });
@@ -182,8 +184,7 @@ async function getAllEvents() {
 
 // find event by id
 async function findEventById(id: string) {
-    let data = await getAllEvents();
-    return data.result.rows.filter((event) => { return event.doc?._id === id });
+    return await client.getDocument({ docId: id, db: eventdb });
 }
 
 // update an event
@@ -192,13 +193,15 @@ async function updateEvent(id: string, threeLetterCode: string, country: string)
     // check if country exists
     let countryExists = await checkCountryExists(country);
     if (countryExists) {
-        // country exists, updating event
-        return client.postDocument({
+        let oldDoc = await findEventById(id);
+        return await client.postDocument({
             db: eventdb,
             document: {
                 _id: id,
+                _rev: oldDoc.result._rev,
                 threeLetterCode: threeLetterCode,
                 country: country,
+                createdAt: oldDoc.result.createdAt,
                 updatedAt: new Date()
             }
         });
@@ -286,7 +289,7 @@ async function checkSeasonExists(year: string, seasonNr: string) {
     return data.result.rows.filter(season => season.doc?.year === year && season.doc?.season === seasonNr).length > 0;
 }
 
-// add new result to season
+// add new result to season / edit result
 async function addResultToSeason(year: string, seasonNr: string, event: string, result: raceResult) {
     // get season data
     let season = await getSeasonByYearAndSeason(year, seasonNr);
@@ -307,7 +310,7 @@ async function addResultToSeason(year: string, seasonNr: string, event: string, 
     }
 }
 
-// update a season
+// update a season //not yet fully tested
 async function updateSeason(
     year: string,
     seasonNr: string,
@@ -390,7 +393,6 @@ function generateRaceResults(quali: boolean): raceResult {
                 {
                     id: string, // driver id
                     team: string, // team name
-                    teamColor: string
                 }
             */
         ],
