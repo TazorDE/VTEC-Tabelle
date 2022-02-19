@@ -1,9 +1,9 @@
 const LocalStrategy = require('passport-local').Strategy
 const bcrypt = require('bcrypt')
-const db = require('./src/cloudant-interaction')
 
 function initialize(passport, getUserByEmail, getUserById) {
   const authenticateUser = async (email, password, done) => {
+    
     let user = await getUserByEmail(email)
     user = user[0];
     if (user == undefined) {

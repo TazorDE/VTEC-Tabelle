@@ -2,23 +2,44 @@ if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
 
-const fs = require('fs');
-const https = require('https');
-const http = require('http');
+import fs from 'fs';
+import https from 'https';
+import http from 'http';
 
-const express = require('express')
+import express from 'express';
 const app = express()
-const bcrypt = require('bcrypt')
-const passport = require('passport')
-const flash = require('express-flash')
-const session = require('express-session')
-const methodOverride = require('method-override')
-const helmet = require('helmet')
-const favicon = require('serve-favicon')
-const path = require('path')
+import bcrypt from 'bcrypt';
+import passport from 'passport';
+import flash from 'express-flash';
+import session from 'express-session';
+import methodOverride from 'method-override';
+import helmet from 'helmet';
+import favicon from 'serve-favicon';
+import path from 'path';
+const expressLayouts = require('express-ejs-layouts');
 
-const db = require('./src/cloudant-interaction')
+import {
+    createUser,
+    findUserById,
+    findUserByEmail,
+    createDriver,
+    findDriverById,
+    getAllDrivers,
+    updateDriver,
+    createEvent,
+    findEventById,
+    getAllEvents,
+    updateEvent,
+    createSeason,
+    getAllSeasons,
+    getAllSeasonsForYear,
+    getSeasonByYearAndSeason,
+    checkSeasonExists,
+    addResultToSeason,
+    updateSeason
+} from './src/ts/cloudant-interaction';
 
+// required http headers
 const header = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
@@ -28,19 +49,22 @@ const header = {
     "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*; img-src * 'self' http://localhost/ https://*.malteteichert.de https://definitelynotascam.de blob: data:;"
 }
 
-const initializePassport = require('./passport-config')
+// initialize passport for authentication
+import initializePassport from './passport-config';
 initializePassport(
     passport,
-    async (email: any) => await db.findUserByEmail(email),
-    async (id: any) => await db.findUserById(id)
+    async (email: any) => await findUserByEmail(email),
+    async (id: any) => await findUserById(id)
 )
 
-app.set('view-engine', 'ejs')
+// set up express server with middleware
+app.set('view engine', 'ejs')
+app.use(expressLayouts)
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 app.use(flash())
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'secret',
     resave: false,
     saveUninitialized: false
 }))
@@ -49,33 +73,11 @@ app.use(passport.session())
 app.use(methodOverride('_method'))
 app.use(helmet())
 app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')))
+app.use(express.static(path.join(__dirname, 'public')))
 
-let credentials;
-
-try {
-    credentials = {
-        key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem', 'utf8'),
-        cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem', 'utf8'),
-        dhparam: fs.readFileSync('/var/www/example/sslcert/dh-strong.pem', 'utf8'),
-        ca: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/chain.pem', 'utf8')
-    };
-} catch (error) {
-    console.error(error);
-}
-
-app.get('/admin', checkAuthenticated, async (req: { user: any; }, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string, arg1: { name: any; }) => void; }) => {
-    let user = await req.user;
-    res.set(header);
-    res.render('admin/admin.ejs', { name: user[0].doc.name })
-})
-
-app.get('/', async (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string, arg1: { list: any; }) => void; }) => {
-    let list = await db.getAllSeasons();
-    //get list of all seasons
-    res.set(header);
-    res.render('public/index.ejs', { list: list.result });
-
-})
+// ------------------------------------------------------------
+// user authentication
+// ------------------------------------------------------------
 
 app.get('/login', checkNotAuthenticated, (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string) => void; }) => {
     res.set(header);
@@ -97,7 +99,7 @@ app.post('/register', checkNotAuthenticated, async (req: { body: { password: any
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10)
         //check
-        db.createUser(req.body.name, req.body.email, hashedPassword)
+        createUser(req.body.name, req.body.email, hashedPassword)
         res.redirect('/login')
     } catch {
         res.redirect('/register')
@@ -109,6 +111,32 @@ app.delete('/logout', (req: { logOut: () => void; }, res: { redirect: (arg0: str
     res.redirect('/')
 })
 
+// ------------------------------------------------------------
+// Main page and admin interface
+// ------------------------------------------------------------
+
+/* app.get('/', async (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string, arg1: { list: any; }) => void; }) => {
+    let list = await db.getAllSeasons();
+    //get list of all seasons
+    res.set(header);
+    res.render('public/index.ejs', { list: list.result });
+})
+
+app.get('/admin', checkAuthenticated, async (req, res) => {
+    let user = await req.user;
+    res.set(header);
+    res.render('admin/admin.ejs', { name: user[0].doc.name })
+}) */
+
+// ------------------------------------------------------------
+// Admin functions
+// ------------------------------------------------------------
+
+// ------------------------------------------------------------
+// public Result display
+// ------------------------------------------------------------
+
+/* 
 app.get('/create', checkAuthenticated, (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string) => void; }) => {
     //render season creation page
     res.set(header);
@@ -294,12 +322,19 @@ app.get('/result/:year-:season', async (req: { params: { year: any; season: any;
 
 app.get('/result/', (req: any, res: { redirect: (arg0: string) => void; }) => {
     res.redirect('/');
+}) 
+*/
+
+// ------------------------------------------------------------
+// Data privacy statement required by german law
+// ------------------------------------------------------------
+app.get('/datenschutz', (req, res) => {
+    res.status(200).render('public/datenschutz.ejs', { title: 'Datenschutz' });
 })
 
-app.get('/datenschutz', (req: any, res: { status: (arg0: number) => { (): any; new(): any; render: { (arg0: string): void; new(): any; }; }; }) => {
-    res.status(200).render('public/datenschutz.ejs');
-})
-
+// ------------------------------------------------------------
+// login middleware
+// ------------------------------------------------------------
 function checkAuthenticated(req: { isAuthenticated: () => any; }, res: { redirect: (arg0: string) => void; }, next: () => any) {
     if (req.isAuthenticated()) {
         return next()
@@ -307,7 +342,6 @@ function checkAuthenticated(req: { isAuthenticated: () => any; }, res: { redirec
 
     res.redirect('/login')
 }
-
 function checkNotAuthenticated(req: { isAuthenticated: () => any; }, res: { redirect: (arg0: string) => any; }, next: () => void) {
     if (req.isAuthenticated()) {
         return res.redirect('/admin')
@@ -315,9 +349,26 @@ function checkNotAuthenticated(req: { isAuthenticated: () => any; }, res: { redi
     next()
 }
 
+// ------------------------------------------------------------
+// Start server
+// ------------------------------------------------------------
+
+// create base http server 
 http.createServer(app).listen(80);
+
 try {
+    let credentials: { key: string, cert: string, dhparam: string, ca: string };
+    // load TLS certificates for https and start https server
+    credentials = {
+        key: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/privkey.pem', 'utf8'),
+        cert: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/fullchain.pem', 'utf8'),
+        dhparam: fs.readFileSync('/var/www/example/sslcert/dh-strong.pem', 'utf8'),
+        ca: fs.readFileSync('/etc/letsencrypt/live/nsa.vtec.malteteichert.de/chain.pem', 'utf8')
+    };
     https.createServer(credentials, app).listen(443);
+    console.info('HTTPS server started on port 443');
+    console.info('Server is accessible on port 80');
 } catch (error) {
-    console.log(error);
+    console.error(error);
+    console.info('Fallback HTTP server started on port 80');
 }

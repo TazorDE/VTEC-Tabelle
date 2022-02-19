@@ -1,3 +1,47 @@
-body {
-    height: auto;
+/*
+    This file contains the main styles for the application.
+    Each screen size has its own segment of the styles.
+    
+*/
+
+// small
+@media (min-width: 20rem) {
+    body {
+        height: auto;
+    }
+    footer {
+        margin-top: auto;
+        text-align: center;
+    }
+}
+
+// medium
+@media (min-width: 42rem) {
+    body {
+        height: auto;
+    }
+    .main--dataprotection {
+        padding: 1rem;
+    }
+}
+
+// large
+@media (min-width: 66rem) {
+    body {
+        height: auto;
+    }
+}
+
+// xlarge
+@media (min-width: 82rem) {
+    body {
+        height: auto;
+    }
+}
+
+// max
+@media (min-width: 99rem) {
+    body {
+        height: auto;
+    }
 }
