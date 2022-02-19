@@ -15,7 +15,7 @@ const client = CloudantV1.newInstance({});
 // -----------------------------------------------------------
 
 type raceResult = {
-    drivers: string[];
+    drivers: any[];
     raceFinishOrder: string[];
     fastestLap: string;
     fastestLapTime: number;
@@ -29,22 +29,19 @@ type raceResult = {
 type season = {
     year: string,
     season: string,
-    teams: [
-        {
-            name: string,
-            drivers: string[],
-            color: string
-        }
-    ],
-    events: [
-        {
-            id: string,
-            date: Date,
-            result: raceResult
-        }
-    ],
+    teams: {
+        name: string,
+        drivers: string[],
+        color: string
+    }[],
+    events: {
+        id: string,
+        date: Date,
+        result: raceResult
+    }[],
     createdAt: Date,
     updatedAt: Date,
+    quali: boolean,
     fastestLapPoints: number,
     fastestLapPosition: number,
     pointsDistribution: number[],
@@ -219,36 +216,17 @@ async function updateEvent(id: string, threeLetterCode: string, country: string)
 async function createSeason(
     year: string,
     seasonNr: string,
-    teams: [{ name: string, drivers: [string], color: string }],
-    events: [{ id: string, date: Date, result: raceResult }],
+    teams: { name: string; drivers: string[]; color: string; }[],
+    events: any[],
     quali: boolean,
     fastestLapPoint: number,
     fastestLapPosition: number, // highest position for the fastest lap point to be awarded
-    pointsDistribution: [], // value of points for each position in the race. First Arr Element is mapped to first position
-    pointsDistributionQuali?: [], // equivalent to pointsDistribution    
+    pointsDistribution: number[], // value of points for each position in the race. First Arr Element is mapped to first position
+    pointsDistributionQuali: number[] | undefined, // equivalent to pointsDistribution    
 ) {
-    // generate results object
-    let result: raceResult = {
-        drivers: [
-            /* All drivers that participated in the race, and the respective team they drove for
-                {
-                    id: string, // driver id
-                    team: string, // team name
-                    teamColor: string
-                }
-            */
-        ],
-        raceFinishOrder: [], // array of drivers ids
-        fastestLap: "", // driver id
-        fastestLapTime: 0, // time in seconds
-        raceDNF: [], // array of drivers ids
-        raceDQ: [], // array of drivers ids
-    }
-    if (quali) {
-        result.qualiFinishOrder = [];
-        result.qualiDQ = [];
-        result.qualiFastestTime = 0;
-    }
+
+    let result = generateRaceResults(quali);
+
     // append results to each event
     events.forEach(event => event.result = result);
 
@@ -258,6 +236,7 @@ async function createSeason(
         season: seasonNr,
         teams,
         events,
+        quali,
         createdAt: new Date(),
         updatedAt: new Date(),
         pointsDistribution: pointsDistribution,
@@ -309,27 +288,124 @@ async function checkSeasonExists(year: string, seasonNr: string) {
 
 // add new result to season
 async function addResultToSeason(year: string, seasonNr: string, event: string, result: raceResult) {
-
-}
-
-// update result in season
-async function updateResultInSeason(year: string, seasonNr: string, event: string, result: raceResult) {
-
+    // get season data
+    let season = await getSeasonByYearAndSeason(year, seasonNr);
+    // find event in season
+    let eventIndex = season[0].doc?.events.findIndex((e: { id: string; }) => e.id === event);
+    if (eventIndex !== -1) {
+        // event found, adding result
+        if (season[0].doc !== undefined) {
+            season[0].doc.events[eventIndex].result = result;
+            return client.postDocument({
+                db: seasondb,
+                document: season[0].doc
+            });
+        }
+    } else {
+        // event not found
+        return null;
+    }
 }
 
 // update a season
 async function updateSeason(
     year: string,
     seasonNr: string,
-    teams: [{ name: string, drivers: [string], color: string }],
+    teams: [{ name: string, drivers: string[], color: string }],
     events: [{ id: string, date: Date, result: raceResult }],
     quali: boolean,
     fastestLapPoint: number,
     fastestLapPosition: number, // highest position for the fastest lap point to be awarded
-    pointsDistribution: [], // value of points for each position in the race. First Arr Element is mapped to first position
-    pointsDistributionQuali?: [], // equivalent to pointsDistribution    
+    pointsDistribution: number[], // value of points for each position in the race. First Arr Element is mapped to first position
+    pointsDistributionQuali?: number[], // equivalent to pointsDistribution    
 ) {
+    // get season data
+    let season = await getSeasonByYearAndSeason(year, seasonNr);
 
+    // update season object
+    if (season[0].doc !== undefined) {
+        season[0].doc.year = year;
+        season[0].doc.season = seasonNr;
+        season[0].doc.teams = teams;
+        season[0].doc.fastestLapPoints = fastestLapPoint;
+        season[0].doc.fastestLapPosition = fastestLapPosition;
+        season[0].doc.pointsDistribution = pointsDistribution;
+        season[0].doc.quali = quali;
+        if (pointsDistributionQuali) {
+            season[0].doc.pointsDistributionQuali = pointsDistributionQuali;
+        }
+        // update events
+        let eventsArray = events;
+        season[0].doc.events.forEach((event: { id: string; date: Date; result: raceResult; }) => {
+            let eventIndex = eventsArray.findIndex(e => e.id === event.id);
+            if (eventIndex !== -1) {
+                // event already exists, adding respective result
+                eventsArray[eventIndex].result = event.result;
+            } else {
+                // event is not yet in season, adding blank result
+
+                let result = {
+                    id: event.id,
+                    date: event.date,
+                    result: generateRaceResults(quali)
+                };
+
+                eventsArray[eventIndex] = result;
+            }
+        });
+
+        // Check if any event will be deleted that has a result
+        // get events that are in season[0].doc.events but not in eventsArray
+        let eventsToRemove = season[0].doc.events.filter((event: { id: string; }) => eventsArray.findIndex(e => e.id === event.id) === -1);
+
+        // remove events from eventsToRemove if they have no filled result
+        eventsToRemove = eventsToRemove.filter((event: { result: raceResult; }) => event.result.drivers.length > 0);
+
+        // if eventsToRemove is not empty, return null
+        if (eventsToRemove.length > 0) {
+            // user tried to delete events that already have results
+            return null;
+        }
+
+        // add new events to season
+        season[0].doc.events = eventsArray;
+
+        // update database
+        return client.postDocument({
+            db: seasondb,
+            document: season[0].doc
+        });
+
+    } else {
+        // season does not exist
+        return null;
+    }
+}
+
+function generateRaceResults(quali: boolean): raceResult {
+    // generate results object
+    let result: raceResult = {
+        drivers: [
+            /* All drivers that participated in the race, and the respective team they drove for
+                {
+                    id: string, // driver id
+                    team: string, // team name
+                    teamColor: string
+                }
+            */
+        ],
+        raceFinishOrder: [], // array of drivers ids
+        fastestLap: "", // driver id
+        fastestLapTime: 0, // time in seconds
+        raceDNF: [], // array of drivers ids
+        raceDQ: [], // array of drivers ids
+    }
+    if (quali) {
+        result.qualiFinishOrder = [];
+        result.qualiDQ = [];
+        result.qualiFastestTime = 0;
+    }
+    return result;
 }
 
 module.exports = {
@@ -350,6 +426,5 @@ module.exports = {
     getSeasonByYearAndSeason,
     checkSeasonExists,
     addResultToSeason,
-    updateResultInSeason,
     updateSeason
 }
