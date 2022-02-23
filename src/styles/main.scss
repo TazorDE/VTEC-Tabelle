@@ -1,3 +1,102 @@
-body {
-    height: auto;
+/*
+    This file contains the main styles for the application.
+    Each screen size has its own segment of the styles.
+    
+*/
+
+// small
+@media (min-width: 20rem) {
+    html,
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    #footer {
+        margin-top: auto;
+        text-align: center;
+        display: block;
+    }
+    #login--container {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+        .card {
+            min-width: 18rem;
+        }
+    }
+}
+
+// small medium
+@media (min-width: 30rem) {
+    html,
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    #footer {
+        margin-top: auto;
+        text-align: center;
+        display: block;
+    }
+    #login--container {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+        .card {
+            min-width: 28rem;
+        }
+    }
+}
+
+// medium
+@media (min-width: 42rem) {
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+    }
+    .main--dataprotection {
+        padding: 1rem;
+    }
+    #login--container {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+        .card {
+            min-width: 38rem;
+        }
+    }
+}
+
+// large
+@media (min-width: 66rem) {
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+    }
+}
+
+// xlarge
+@media (min-width: 82rem) {
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+    }
+}
+
+// max
+@media (min-width: 99rem) {
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+    }
 }
