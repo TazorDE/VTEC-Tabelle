@@ -109,6 +109,41 @@ app.delete('/logout', (req: { logOut: () => void; }, res: { redirect: (arg0: str
     res.redirect('/')
 })
 
+// ------------------------------------------------------------
+// Main page and admin interface
+// ------------------------------------------------------------
+
+app.get('/admin', checkAuthenticated, async (req, res) => {
+    const locals: { title: string; } = {
+        title: 'Admin',
+    }
+    res.set(header);
+    res.render('admin/index.ejs', locals);
+})
+
+/* app.get('/', async (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string, arg1: { list: any; }) => void; }) => {
+    let list = await db.getAllSeasons();
+    //get list of all seasons
+    res.set(header);
+    res.render('public/index.ejs', { list: list.result });
+})
+
+app.get('/admin', checkAuthenticated, async (req, res) => {
+    let user = await req.user;
+    res.set(header);
+    res.render('admin/admin.ejs', { name: user[0].doc.name })
+}) */
+
+// ------------------------------------------------------------
+// Admin functions
+// ------------------------------------------------------------
+
+// ------------------------------------------------------------
+// public Result display
+// ------------------------------------------------------------
+
+/* 
+>>>>>>> Stashed changes
 app.get('/create', checkAuthenticated, (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string) => void; }) => {
     //render season creation page
     res.set(header);
