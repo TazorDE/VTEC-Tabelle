@@ -6,18 +6,18 @@ const fs = require('fs');
 const https = require('https');
 const http = require('http');
 
-const express = require('express')
-const app = express()
-const bcrypt = require('bcrypt')
-const passport = require('passport')
-const flash = require('express-flash')
-const session = require('express-session')
-const methodOverride = require('method-override')
-const helmet = require('helmet')
-const favicon = require('serve-favicon')
-const path = require('path')
+const express = require('express');
+const app = express();
+const bcrypt = require('bcrypt');
+const passport = require('passport');
+const flash = require('express-flash');
+const session = require('express-session');
+const methodOverride = require('method-override');
+const helmet = require('helmet');
+const favicon = require('serve-favicon');
+const path = require('path');
 
-const db = require('./src/cloudant-interaction')
+const db = require('./src/cloudant-interaction');
 
 const header = {
     "Access-Control-Allow-Origin": "*",
@@ -26,29 +26,29 @@ const header = {
     "Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*; img-src * 'self' http://localhost/ https://*.malteteichert.de https://definitelynotascam.de blob: data:;",
     "X-Content-Security-Policy": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*; img-src * 'self' http://localhost/ https://*.malteteichert.de https://definitelynotascam.de blob: data:; ",
     "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*; img-src * 'self' http://localhost/ https://*.malteteichert.de https://definitelynotascam.de blob: data:;"
-}
+};
 
-const initializePassport = require('./passport-config')
+const initializePassport = require('./passport-config');
 initializePassport(
     passport,
     async (email: any) => await db.findUserByEmail(email),
     async (id: any) => await db.findUserById(id)
-)
+);
 
-app.set('view-engine', 'ejs')
-app.use(express.urlencoded({ extended: false }))
-app.use(express.json())
-app.use(flash())
+app.set('view-engine', 'ejs');
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(flash());
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false
-}))
-app.use(passport.initialize())
-app.use(passport.session())
-app.use(methodOverride('_method'))
-app.use(helmet())
-app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')))
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(methodOverride('_method'));
+app.use(helmet());
+app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 
 let credentials;
 
@@ -67,7 +67,7 @@ app.get('/admin', checkAuthenticated, async (req: { user: any; }, res: { set: (a
     let user = await req.user;
     res.set(header);
     res.render('admin/admin.ejs', { name: user[0].doc.name })
-})
+});
 
 app.get('/', async (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string, arg1: { list: any; }) => void; }) => {
     let list = await db.getAllSeasons();
@@ -75,23 +75,23 @@ app.get('/', async (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin"
     res.set(header);
     res.render('public/index.ejs', { list: list.result });
 
-})
+});
 
 app.get('/login', checkNotAuthenticated, (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string) => void; }) => {
     res.set(header);
     res.render('auth/login.ejs')
-})
+});
 
 app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
     successRedirect: '/admin',
     failureRedirect: '/login',
     failureFlash: true
-}))
+}));
 
 app.get('/register', checkNotAuthenticated, (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string) => void; }) => {
     res.set(header);
     res.render('auth/register.ejs')
-})
+});
 
 app.post('/register', checkNotAuthenticated, async (req: { body: { password: any; name: any; email: any; }; }, res: { redirect: (arg0: string) => void; }) => {
     try {
@@ -102,36 +102,40 @@ app.post('/register', checkNotAuthenticated, async (req: { body: { password: any
     } catch {
         res.redirect('/register')
     }
-})
+});
 
 app.delete('/logout', (req: { logOut: () => void; }, res: { redirect: (arg0: string) => void; }) => {
     req.logOut()
     res.redirect('/')
-})
+});
 
 // ------------------------------------------------------------
 // Main page and admin interface
 // ------------------------------------------------------------
 
-app.get('/admin', checkAuthenticated, async (req, res) => {
+app.get('/admin', checkAuthenticated, async (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string, arg1: { title: string; }) => void; }) => {
     const locals: { title: string; } = {
         title: 'Admin',
-    }
+    };
     res.set(header);
     res.render('admin/index.ejs', locals);
-})
+});
+
+app.get('/', async (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string, arg1: { title: string; data: any; }) => void; }) => {
+    const locals = {
+        title: 'VTEC-League',
+        data: await db.getAllSeasons(),
+    };
+    console.log('locals: ', locals);
+    res.set(header);
+    res.render('public/index.ejs', locals);
+});
 
 /* app.get('/', async (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string, arg1: { list: any; }) => void; }) => {
     let list = await db.getAllSeasons();
     //get list of all seasons
     res.set(header);
     res.render('public/index.ejs', { list: list.result });
-})
-
-app.get('/admin', checkAuthenticated, async (req, res) => {
-    let user = await req.user;
-    res.set(header);
-    res.render('admin/admin.ejs', { name: user[0].doc.name })
 }) */
 
 // ------------------------------------------------------------
@@ -142,8 +146,7 @@ app.get('/admin', checkAuthenticated, async (req, res) => {
 // public Result display
 // ------------------------------------------------------------
 
-/* 
->>>>>>> Stashed changes
+/*
 app.get('/create', checkAuthenticated, (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string) => void; }) => {
     //render season creation page
     res.set(header);
@@ -329,7 +332,7 @@ app.get('/result/:year-:season', async (req: { params: { year: any; season: any;
 
 app.get('/result/', (req: any, res: { redirect: (arg0: string) => void; }) => {
     res.redirect('/');
-})
+})*/
 
 app.get('/datenschutz', (req: any, res: { status: (arg0: number) => { (): any; new(): any; render: { (arg0: string): void; new(): any; }; }; }) => {
     res.status(200).render('public/datenschutz.ejs');
