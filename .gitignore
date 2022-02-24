@@ -1,5 +1,5 @@
 .env
 node_modules
-/ibm-credentials.env
+ibm-credentials.env
 /dist
 /public/css
