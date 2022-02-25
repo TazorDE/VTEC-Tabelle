@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "devStart": "npm run dev:css && ts-node server.ts",
+    "devStart": "npm run dev:css && nodemon server.ts",
     "start": "npm run build && node dist/server.js",
     "dev:css": "sass --no-source-map src/styles:public/css",
     "build:css": "sass --no-source-map src/styles:dist/public/css",

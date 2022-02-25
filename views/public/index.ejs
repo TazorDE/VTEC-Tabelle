@@ -1,27 +1,31 @@
-<h1>VTEC Results System</h1>
+<div class="text-center">
+  <h1 class="mt-2">VTEC Results System</h1>
 
-<% // create Link-Buttons that lead to the results page for the season with the newest season on top %>
-<% 
-  // sort list.rows by doc.year and doc.seasonNr in descending order
-  list.rows.sort(function(a, b) {
-    if (a.doc.year < b.doc.year) {
-      return 1;
-    } else if (a.doc.year > b.doc.year) {
-      return -1;
-    } else {
-      if (a.doc.seasonNr < b.doc.seasonNr) {
-        return 1;
-      } else if (a.doc.seasonNr > b.doc.seasonNr) {
+  <% 
+    // sort data.result.rows by doc.year and doc.seasonNr in descending order
+    data.result.rows.sort(function(a, b) {
+      if (a.doc.year > b.doc.year) {
         return -1;
+      } else if (a.doc.year < b.doc.year) {
+        return 1;
       } else {
-        return 0;
+        if (a.doc.seasonNr > b.doc.seasonNr) {
+          return -1;
+        } else if (a.doc.seasonNr < b.doc.seasonNr) {
+          return 1;
+        } else {
+          return 0;
+        }
       }
-    }
-  });
-%>
-<% list.rows.forEach(function(row) { %>
-<a href="/results/<%- row.doc.year %>/<%- row.doc.seasonNr %>">
-  <%- row.doc.year %>-<%- row.doc.seasonNr %>
-</a>
-<br>
-<% }); %>
+    });
+  %>
+  <% // create Link-Buttons that lead to the results page for the season with the newest season on top %>
+  <% data.result.rows.forEach(element => { %>
+  <a href="/result/<%= element.doc.year %>-<%= element.doc.season %>">
+    <button class="btn btn-primary">
+      <%= element.doc.year %>-<%= element.doc.season %>
+    </button>
+  </a>
+  <br>
+  <% }); %>
+</div>

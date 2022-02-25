@@ -14,6 +14,13 @@
           <a class="nav-link" href="/admin">Admin</a>
         </li>
       </ul>
+      <% if(user){ %>
+      <ul class="nav navbar-nav navbar-right">
+        <form class="d-flex" action="/logout?_method=DELETE" method="POST">
+          <button class="btn btn-sm btn-danger" type="submit" value="submit">Logout</button>
+        </form>
+      </ul>
+      <% } %>
     </div>
   </div>
 </nav>
