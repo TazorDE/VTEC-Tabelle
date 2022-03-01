@@ -1,7 +1,6 @@
 /*
     This file contains the main styles for the application.
     Each screen size has its own segment of the styles.
-    
 */
 
 // tiny
@@ -16,7 +15,7 @@ body {
     text-align: center;
     display: block;
 }
-.login--container {
+#login--container {
     display: flex;
     justify-content: center;
     margin-top: 2rem;

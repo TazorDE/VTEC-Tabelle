@@ -4,41 +4,41 @@
     <div class="card-body">
       <br>
       <!-- Season create -->
-      <%- include('partials/link-button', {text: 'Add Season', link: 'https://google.com', type: 'info'}); %>
+      <%- include('partials/link-button', {text: 'Add Season', link: '/create/season', type: 'primary'}); %>
       <br>
       <!-- Season edit -->
       <%- include('partials/link-button', {
-              text: 'Edit Season', link: 'https://google.com', type: 'secondary'
+              text: 'Edit Season', link: '/edit/season', type: 'dark border-warning'
       }) %>
-      <br>
+      <hr class="w-100">
       <!-- Result add -->
       <%- include('partials/link-button', {
-              text: 'Add Result', link: 'a', type: 'info'
+              text: 'Add Result', link: '/create/results', type: 'primary'
       }) %>
       <br>
       <!-- Result Edit -->
       <%- include('partials/link-button', {
-              text: 'Edit Result', link: 'a', type: 'secondary'
+              text: 'Edit Result', link: '/edit/results', type: 'dark border-warning'
       }) %>
-      <br>
+      <hr class="w-100">
       <!-- Driver add -->
       <%- include('partials/link-button', {
-              text: 'Add Result', link: 'a', type: 'info'
+              text: 'Add Driver', link: '/create/drivers', type: 'primary'
       }) %>
       <br>
       <!-- Driver edit -->
       <%- include('partials/link-button', {
-              text: 'Edit Result', link: 'a', type: 'secondary'
+              text: 'Edit Driver', link: '/edit/drivers', type: 'dark border-warning'
       }) %>
-      <br>
+      <hr class="w-100">
       <!-- Event add -->
       <%- include('partials/link-button', {
-              text: 'Add Result', link: 'a', type: 'info'
+              text: 'Add Event', link: '/create/events', type: 'primary'
       }) %>
       <br>
       <!-- Event edit -->
       <%- include('partials/link-button', {
-              text: 'Edit Result', link: 'a', type: 'secondary'
+              text: 'Edit Event', link: '/edit/events', type: 'dark border-warning'
       }) %>
       <br>
     </div>

@@ -11,12 +11,15 @@
           <a class="nav-link" href="/">Results</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="/stats">Driver Statistics</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="/admin">Admin</a>
         </li>
       </ul>
       <% if(user){ %>
-      <ul class="nav navbar-nav navbar-right">
-        <form class="d-flex" action="/logout?_method=DELETE" method="POST">
+      <ul class="nav navbar-nav navbar-right text-center">
+        <form class="d-flex p-2" action="/logout?_method=DELETE" method="POST">
           <button class="btn btn-sm btn-danger" type="submit" value="submit">Logout</button>
         </form>
       </ul>

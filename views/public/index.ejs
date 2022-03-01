@@ -21,9 +21,9 @@
   %>
   <% // create Link-Buttons that lead to the results page for the season with the newest season on top %>
   <% data.result.rows.forEach(element => { %>
-  <a href="/result/<%= element.doc.year %>-<%= element.doc.season %>">
+  <a href="/result/<%= element.doc.year %>-<%= element.doc.seasonNr %>">
     <button class="btn btn-primary">
-      <%= element.doc.year %>-<%= element.doc.season %>
+      <%= element.doc.year %>-<%= element.doc.seasonNr %>
     </button>
   </a>
   <br>

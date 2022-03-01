@@ -17,7 +17,7 @@ import methodOverride from 'method-override';
 import helmet from 'helmet';
 import favicon from 'serve-favicon';
 import path from 'path';
-const expressLayouts = require('express-ejs-layouts');
+import expressLayouts from 'express-ejs-layouts';
 
 import {
     createUser,
@@ -96,7 +96,6 @@ app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
 }));
 
 app.get('/register', checkNotAuthenticated, (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string, arg1: { title: string }) => void; }) => {
-    let user = req.session.passport.user | 0;
     const locals: { title: string, user: any } = {
         title: 'Register',
         user: false
@@ -148,9 +147,70 @@ app.get('/', async (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin"
 // Admin functions
 // ------------------------------------------------------------
 
+// catch all for admin routes
+app.get('/create', checkAuthenticated, (req, res) => {
+    res.redirect('/admin')
+});
+
+// seasons
+app.get('/create/season', checkAuthenticated, (req, res) => {
+    res.send('create season')
+});
+
+app.get('/edit/season', checkAuthenticated, (req, res) => {
+    res.send('edit season')
+});
+
+// results
+app.get('/create/results', checkAuthenticated, (req, res) => {
+    res.send('create results')
+});
+
+app.get('/edit/results', checkAuthenticated, (req, res) => {
+    res.send('edit results')
+});
+
+// drivers
+app.get('/create/drivers', checkAuthenticated, (req, res) => {
+    res.send('create drivers')
+});
+
+app.get('/edit/drivers', checkAuthenticated, (req, res) => {
+    res.send('edit drivers')
+});
+
+// events
+app.get('/create/events', checkAuthenticated, (req, res) => {
+    res.send('create events')
+});
+
+app.get('/edit/events', checkAuthenticated, (req, res) => {
+    res.send('edit events')
+});
+
 // ------------------------------------------------------------
 // public Result display
 // ------------------------------------------------------------
+
+// result page
+app.get('/result/:year-:season', async (req, res) => {
+    let data = await getSeasonByYearAndSeason(req.params.year, req.params.season);
+    res.send('result page')
+});
+
+// driver stats
+app.get('/stats', async (req, res) => {
+    res.send('driver stats')
+});
+
+app.get('/stats/:id', async (req, res) => {
+    res.send('driver stats individual page')
+});
+
+// ical-link
+app.get('/season/calendar/:year-:season/vtec-league.ical', async (req, res) => {
+    res.send('ical-link')
+});
 
 // ------------------------------------------------------------
 // Data privacy statement required by german law
