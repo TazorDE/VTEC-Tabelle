@@ -32,7 +32,6 @@ import {
     updateEvent,
     createSeason,
     getAllSeasons,
-    getAllSeasonsForYear,
     getSeasonByYearAndSeason,
     checkSeasonExists,
     addResultToSeason,
