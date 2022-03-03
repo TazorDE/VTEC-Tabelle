@@ -21,11 +21,13 @@ type raceResult = {
     fastestLapTime: number,
     raceDNF: string[],
     raceDQ: string[],
+    racePenalties: { driverId: string, time: number }[],
     sprint: {
         sprint: boolean,
         sprintFinishOrder: string[],
         sprintDNF: string[],
         sprintDQ: string[],
+        sprintPenalties: { driverId: string, time: number }[],
         fastestDriver: string,
         fastestDriverTime: number
     },
@@ -271,11 +273,13 @@ function generateBlankRaceResult(quali: boolean): raceResult {
         fastestLapTime: 0, // time in seconds
         raceDNF: [], // list of driver ids that did not finish
         raceDQ: [], // list of driver ids that were disqualified
+        racePenalties: [], // list of driver ids that had penalties and the respective penalty time
         sprint: {
             sprint: false, // true if a sprint was completed
             sprintFinishOrder: [], // list of driver ids in order of finish
             sprintDNF: [], // list of driver ids that did not finish
             sprintDQ: [], // list of driver ids that were disqualified
+            sprintPenalties: [], // list of driver ids that had penalties and the respective penalty time
             fastestDriver: "", // driver id of fastest lap
             fastestDriverTime: 0 // time in seconds
         }
