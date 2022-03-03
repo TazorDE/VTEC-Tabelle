@@ -49,6 +49,15 @@ const header = {
     "X-WebKit-CSP": "default-src * 'self' 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval' localhost:*/*; img-src * 'self' http://localhost/ https://*.malteteichert.de https://definitelynotascam.de blob: data:;"
 };
 
+const contrastColorGenerator = (hexcolor: string) => {
+    hexcolor = hexcolor.replace("#", "");
+    var r = parseInt(hexcolor.substr(0, 2), 16);
+    var g = parseInt(hexcolor.substr(2, 2), 16);
+    var b = parseInt(hexcolor.substr(4, 2), 16);
+    var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return (yiq >= 128) ? 'black' : '#ebebeb';
+};
+
 // initialize passport for authentication
 import initializePassport from './passport-config';
 initializePassport(
@@ -135,7 +144,7 @@ app.get('/admin', checkAuthenticated, async (req: any, res: { set: (arg0: { "Acc
 app.get('/', async (req: any, res: { set: (arg0: { "Access-Control-Allow-Origin": string; "Access-Control-Allow-Headers": string; "Access-Control-Allow-Methods": string; "Content-Security-Policy": string; "X-Content-Security-Policy": string; "X-WebKit-CSP": string; }) => void; render: (arg0: string, arg1: { title: string; data: any; }) => void; }) => {
     const locals = {
         title: 'VTEC-League',
-        data: await getAllSeasons(),
+        data: await getAllSeasons(true),
         user: false
     };
     res.set(header);
@@ -194,7 +203,14 @@ app.get('/edit/events', checkAuthenticated, (req, res) => {
 // result page
 app.get('/result/:year-:season', async (req, res) => {
     let data = await getSeasonByYearAndSeason(req.params.year, req.params.season);
-    res.send('result page')
+    const locals = {
+        title: `Results ${req.params.year}-${req.params.season}`,
+        data: data,
+        colorFunc: contrastColorGenerator,
+        user: false
+    };
+    res.set(header);
+    res.render('public/result.ejs', locals);
 });
 
 // driver stats
